@@ -1,0 +1,30 @@
+#Configure Networking 
+
+Weave NET
+
+Pod network IP address range should not overlap with the node IP address range 
+In AWS we can check the VPC by viewing the private IP address - which in AWS starts with 172. - no overlap 
+Weavenet default IP address range starts with 10.32.0.0/12 
+There are about a million available IP addresses per cluster with weavenet
+
+To install weave net 
+    Check k8s documentation 
+    Search for network addons
+    Click on weavenet on the list 
+    installation guide is one liner 
+    takes a kubernetes manifest and applies it using a kubectl apply command 
+
+Checking Pod Ip addresses
+    How do we see the IP addresses of the pods in the cluster
+    Detailed output of the pod 
+    command - kubectl describe pod (podname) -n (namespace)
+        We will see a bunch of output of containers inside the pod 
+        You'll see the IP address inside the pod 
+        Can't do this for every pod inside the cluster 
+    Can display pods output
+        Command: kubectl get pod -n kube-system -o wide - will give us an extended output of the pods 
+            This will include the IP address   
+    Can display node output
+        kubectl get node -o wide 
+
+Pod network plugin is a pre-requisite for joining worker nodes 

@@ -1,0 +1,14 @@
+##Kubesystem Namespaces 
+
+Check what namespaces are running in our nodes 
+
+Command: kubectl get ns 
+    Pay attention to 2 Namespaces (kube-node-lease and kube-public can be ignored)
+        Default 
+        kube-system 
+Command - kubectl get pod 
+    Won't see any pods unless deployed 
+    The "default" namespace is used as a default when executing kubectl commands 
+    Will need to specify other namespaces if necessary
+    To specify command: kubectl get pod -n (specific NS - example: kube-system)
+             

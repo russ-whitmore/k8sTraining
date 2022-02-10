@@ -1,0 +1,38 @@
+#CRI or Container Runtime interface 
+
+First application we need to install is Container Runtime
+    Not a kubernetes component
+    Kubernetes uses the container runtime to schedule the containers 
+
+What is a CRI and why do we need it?
+    Applications run as containers in kubernetes 
+    K8s processes run as containers
+    We need a container runtime on master and worker nodes
+
+How to choose a runtime and why does k8s not care?
+    At the beginning only docker was supported
+    Code was integrated into kubelet code 
+    More runtimes emerged so k8s wanted to make things more flexible 
+    Need to not integrate with the kubelet
+    K8s created a generic interface - container runtime interface 
+
+CRI defined 
+    Set of rules of what a container runtime must implement
+    Through the interface, kubelet will be able to talk to it
+    Docker didn't implement CRI rules and k8s had to intergrate docker with CRI 
+    Created docker shim - which is a bridge which lets kubelet talk to docker using the API
+
+Docker is an entire stack 
+    Docker is used to build docker images
+    Docker CLI, UI, API etc. 
+    Kubernetes only needs the container runtime part 
+    More lightweight runtimes emerged - containerD and cri-o
+
+Kubernetes deprecates Dockershim 
+    1.20 docker support is deprecated, 1.22 it's no longer supported 
+    You can still use docker as long as another company creates a service to maintain support
+    However, it's preferred to use a more lightweight container runtime - i.e. containerD
+        Can still pull and run docker images with other runtimes 
+        There's no reason to use Docker as a runtime anymore 
+        All cloud platforms use containerD 
+    

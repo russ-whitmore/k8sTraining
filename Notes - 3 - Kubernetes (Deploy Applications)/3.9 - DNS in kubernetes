@@ -1,0 +1,49 @@
+## DNS in k8s 
+
+Imagine we have 2 pods 
+    how do we resolve service name to its ip address?
+        simplest way would be to write in /et/hosts file 
+        If we have hundreds of services and all pods are talking to those services, there's a better way
+    Map them in a centralized place 
+        DNS server in this case 
+        Point the pods to the nameserver 
+        Specifying address of name server 
+        Nameserver in k8s cluster 
+        Manages list of service names and their ip addresses
+        All pods point to this. 
+
+    Prior to k8s version 1.12 dns was kubedns - replaced by coredns 
+        2 replicas minimum in the kube-system namespace 
+        Check CoreDNS pods are running and accessible 
+        check logs of coredns pods 
+        kubectl get pod -n kube-system --show-labels 
+        kubectl logs -n kube-system -l k8s-app=kube-dns 
+            used to troubleshoot issues 
+        kubectl get pod 
+            kubectl exec -it test-nginx-svc -- bash 
+            cat /etc/resolve.conf
+            nameserver 10.96.0.10 (or similar ip address should show up)
+                This is the ip address of coredns service 
+            exit
+            kubectl get svc -n kube-system | dns
+        Who tells pod this is the name server they need to use?
+            kubelet does 
+            sudo cat /var/lib/kubelet/config.yaml 
+
+What happens if I create a test pod in a different namespace?
+    kubectl get pod 
+    kubectl get svc 
+    kubectl get ns 
+    kubectl create ns test-ns
+    kubectl run test-nginx-svc -n test-ns --image=nginx 
+    kubectl get pod -n test-ns 
+    kubectl exec -it test-nginx-svc -n test-ns -- bash 
+    curl  (ip address of service and port :8080)
+    curl nginx-service:8080 - should get an error 
+
+Core DNS creates a subdomain in a namespace 
+    fqdn will be different - i.e. nginx-svc.default (ends in namespace name) and test-nginx-svc.test-ns
+    full name of any service in the cluster: 
+      <servicename>.<namespace>.svc.cluster.local 
+      We don't have to specify the fdqn 
+      kubernetes only searches in the same namespace   

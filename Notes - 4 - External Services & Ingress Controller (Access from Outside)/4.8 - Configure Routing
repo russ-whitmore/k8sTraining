@@ -1,0 +1,38 @@
+## Configure Routing 
+
+With ingress 
+
+Ingress component is like a configuration piece for the ingress controller 
+We define HTTP rules, which the ingress controller fulfills 
+
+K8s way to configure routing logic 
+Ingress should forward the traffic to internal traffic 
+
+Create and apply ingress configuration 
+    kubectl create ingress my-app-ingress --rule=host/path=service:port --dry-run=client -o yaml > my-ingress.yaml
+    vim my-ingress.yaml
+    clean up unnecessary data 
+    Each HTTP rule contains:
+        An optional host 
+        List of paths, each of which has an associated backend
+        A backend is a combination of Service and port names 
+    Use dns a record of loadbalancer as host attribute 
+    we want to forward to our internal service called nginx service 
+    Specify port number   
+    Pathtype is exact which means it matches the URL path exactly and with case sensitivity 
+    Prefix - matches based on a URL path Prefix split by "/"  
+    Ingress component is in the same namespace as our internal service 
+
+Configure multiple paths 
+    Same host but different paths 
+    kubectl delete ingress my-app-ingress
+    vim my-ingress.yaml
+    kubectl describe ingress my-app-ingress 
+    Tell ingress to forward request to loadbalancer and remove /myapp path. Tell ingress to remove the path by adding:
+    annotations attribute - nginx.ingress.kubernetes.io/rewrite-target: / 
+    kubectl apply my-ingress.yaml 
+    Should now be able to access applications in the cluster 
+
+ kubectl get pod - we have 1 ingress controller running in the cluster 
+ Should have 1 replica on ingress controller pod per worker node 
+ 

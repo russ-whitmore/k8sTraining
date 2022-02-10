@@ -1,0 +1,21 @@
+## Certificates API 
+
+K8s allows you to configure these external sources:
+    Static token file 
+    Certificates
+    3rd party identity service 
+
+    You have to manage all these 3 above yourself 
+
+Configure User authentication 
+    Using client Certificates
+
+Review TLS Certificates notes 
+
+Process of certificate signing 
+    1. Create key-pair - need signed by k8s CA 
+    2. Generate certificate signing request (CSR)
+    3. Send CRS using k8s certificates API 
+    4. K8s signs certificate for you 
+    5. K8s admin approves certificate 
+    

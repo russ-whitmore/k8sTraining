@@ -1,0 +1,91 @@
+## Configure HostPathVolume 
+
+Different volume types 
+    Where is the data persisted?
+        Cloud?
+            AWS, Google, Azure, etc. 
+        On prem?
+        Remote storage 
+            Should be using for databases or any other important data to keep  
+
+hostPath volume
+   Simple configuration 
+   Tested in CKA exam 
+
+1. Create PersistentVolume 
+    data is stored on local machine 
+2. Create PersistentVolumeClaim 
+    Resource is there to claim storage through the component - claim will find volume with most fitting 
+3. Create deployment to use Volume 
+
+Create PersistentVolume
+    kubectl create --help 
+        not on list of subcommands for create 
+        Check kubernetes.io for config reference 
+    vim myapp-pv.yaml 
+    apiVersion: v1
+    kind: PersistentVolume
+    metadata:
+      name: data-pv
+    spec: 
+      hostPath:
+        path: "/mnt/data"
+      capacity:
+        storage: 10Gi
+      accessModes:
+      -  ReadWriteMany (depends on what app needs)
+      :wq
+      kubectl apply -f myapp-pv.yaml 
+      kubectl get pv 
+      Should show as available 
+
+Create PersistentVolumeClaim
+
+Need to define how much storage, access mode etc. we need 
+K8s control plane looks for a PV that satisfies the claim's requirements 
+When a suitable PV is found, it binds the claim to the volume. 
+Otherwise it will stay unbound 
+
+    vim myapp-pvc.yaml 
+    reference documentation 
+    apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      name: mysql-data-pvc 
+    spec:
+      resources:
+        requests:
+          storage: 5Gi 
+      accessModes:
+      - ReadWriteMany
+      :wq
+      kubectl apply -f myapp-pvc.yaml 
+      kubectl get pv 
+      Should now be bound - PVC was created and able to find matching PersistentVolume in the cluster - they are now bound together 
+      PersistentVolume is not available for any other claim unless the PVC unclaims it 
+      The match doesn't have to be 100% - it just has to be the best available 
+
+Create deployment
+    vim mysql-deployment.yaml 
+    paste in deployment configuration 
+    under containers in spec:
+    in containers 
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: mypwd   
+
+        volumeMounts: 
+        - name: db-data 
+          mountPath: "/var/lib/mysql"
+    volumes: 
+    - name: db-data 
+      PersistentVolumeClaim:
+        claimName: mysql-data-pvc
+    
+kubectl apply -f mysql-deployment.yaml 
+kubectl get pod 
+kubectl describe pod (will also see which node data is on) 
+    verify volume config is correct 
+    kubectl exec -it pod name -- bash 
+    ls /var/lib/mysql/ 
+    exit 

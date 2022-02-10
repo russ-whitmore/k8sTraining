@@ -1,0 +1,32 @@
+## Kubectl Format Output 
+
+Debugging using Kubectl
+
+    Node IP addresses of Pods 
+    Service accounts of Pods 
+    Creation time, image and container names 
+    Kubectl describe for each individually 
+
+    Kubectl get pod 
+        standard output 
+    kubectl get pod -o wide 
+    kubectl get pod -o yaml  
+    kubectl get pod -o json  (can do that for all components, nodes, services, etc.)
+
+How to filter through a number of pods 
+    How to extract specific attributes we're interested in 
+        JSONPath - query language for JSON 
+    kubectl get pod -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}' 
+
+vim pod_name_ip_create_at_.sh
+copy and save in file kubectl get pod -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}'
+chmod u+x pod_name_ip_create_at_.sh
+This is a way to turn a longer command into a simple script that'll give you what you need 
+
+
+Custom Columns 
+
+To add column names to these values - customer-columns output format 
+kubectl get pod -o custom-columns=POD_NAME:.metadata.name,POD_IP:.status.podIP,CREATED_AT:.status.startTime
+
+    

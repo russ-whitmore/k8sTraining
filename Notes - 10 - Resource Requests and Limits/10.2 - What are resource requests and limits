@@ -1,0 +1,18 @@
+## What are resource requests and limits?
+
+
+Configure resource requests for each container
+    Requests is what the container is guaranteed to get 
+    K8s scheduler users this to figure out where to run the pods 
+
+Why resource limits are important?
+    What is application needs more resources?
+        Too much data to load into memory 
+        Bug in application 
+        Container will consume more than the requested resources 
+        If not limited, container could consume all resources 
+
+Configure resource limits for each container 
+    Make sure container never goes above a certain value 
+    Container is only allowed to go up to the limit 
+

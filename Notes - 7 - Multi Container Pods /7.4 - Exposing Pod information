@@ -1,0 +1,32 @@
+## Exposing pod information 
+
+you need data abot pod or k8s environment in your application 
+
+kubectl get pod -o yaml - entire config will all data. Is accessible inside the container 
+In order to access them, we need to explicitly pass them 
+
+    To do this:
+        vim nginx-deployment.yaml 
+        clean up init containers (remove them)
+        add env under command section 
+        env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath:  metadata.name 
+        - name: POD_SERVICE_ACCOUNT
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.serviceAccountName
+        -name: POD_IP
+         valueFrom: 
+           fieldRef:
+             fieldPath: status.podIP 
+
+        add printenv POD_NAME POD_SERVICE_ACCOUNT POD_IP; under commands 
+        or remove all that define in args section - see video for example 
+        save 
+        delete nginx-deployment kubectl delete deployment nginx-deployment
+        kubectl get pod 
+        kubectl logs nginx-deployment-podname -c logs-sidecar 
+        

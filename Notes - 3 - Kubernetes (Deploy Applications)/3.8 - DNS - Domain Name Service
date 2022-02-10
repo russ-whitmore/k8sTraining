@@ -1,0 +1,28 @@
+## Pre-req DNS 
+
+Every computer is uniquely identified by its IP address
+
+Why do we use names instead of IP addresses?
+    Is that a serious question? We can't remember all those IP addresses, using a name is way easier. 
+    Computers don't so there's a translation service that translates names into numbers - DNS
+
+DNS allows us giving a unique name to any IP address - like a phonebook
+
+Domain names have a heirarchical structure 
+    Root domains .
+    TLDs or top level domains 
+        .edu, .com, .org, .mil, .net, .gov
+    There are also domains for each country
+You can buy a domain name, i.e. mywebsite.com 
+
+Who manages these names?
+    Regulated by internet corporation for assigned names and numbers (ICANN)
+        Authorizes domain name registrars 
+
+Fully qualified domain name 
+    example: courses.techworld-with-nana.com. - last . is root domain 
+    Not necessary to add the ending dot 
+
+Every computer has a DNS client installed 
+    
+    

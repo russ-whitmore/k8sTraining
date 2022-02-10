@@ -1,0 +1,76 @@
+##Kubernetes Installation
+
+What do we need to install? (On control plane/master and worker)
+    1. Container Runtime (run as regular linux process)
+    2. Kubelet (run as regular linux process and installed from package repo)
+    3. Deploy pods (on control plane mode)
+        API Server
+        Scheduler
+        Controller Manager
+        ETCD
+    4. Kube Proxy - will run as a pod (installed on both master and worker)
+    
+2 things to consider
+    Kubernetes manifest file for each application
+    Deployed securely - no unauthorized access
+    Encrypted communication 
+
+Static pods 
+    Master components deployed as pods
+    Pods are deployed by master components
+    Send request to API Server
+    Scheduler decides where to place pod
+    Pod data stored in etcd store 
+
+How to schedule Master Pods?
+    Static Pods
+        Are managed directly by Kubelet
+        Without control plane 
+        Kubelet watches static pod and restarts if fails
+        Pod names are suffixed with the node hostname 
+        When installing k8s cluster, need to generate static pod manifests 
+        Put those config files into correct folder (etc/kubernetes/manifests) where kubelet will find and schedule
+
+Regular Pod scheduling
+    API server gets request
+    Scheduler decides which node, communicates with kubelet 
+    Kubelet schedules node
+        Kubelet watches a specific location on the node 
+            /etc/Kubernetes/manifests
+        Schedules pod when finds a pod manifest 
+
+Certificates 
+    Who talks to who?
+        Control Plane, API server is the central of communication and every component talks to the API server
+        Every component will need to provide a certificate to authenticate itself 
+    We need to generate a self-signed CA certificate for Kubernetes (cluster root CA)
+    Sign all client and server certificates with it 
+    Certificates are stored in /etc/kubernetes/pki 
+    Server Certificate for the API server endpoint
+    Client certificate for scheduler and controller manager 
+    Server certificate for etcd and kubelet 
+    Client certificate for API server to talk to Kubelets and Etcd 
+    Client certificate for kubelet to authenticate to API server 
+
+PKI certificates for authentication 
+    Every client needs to be authorized for API server and Etcd 
+    To ensure proper authentication, each component gets a certificate
+
+Client certificates for K8s admins 
+    Signed by cluster root CA
+
+1. Generate self-signed CA certificate for whole kubernetes cluster
+2. Sign all client and server certificates with it 
+    Server Certificate for the API server endpoint
+    Client certificate for scheduler and controller manager 
+    Server certificate for etcd and kubelet 
+    Client certificate for API server to talk to Kubelets and Etcd 
+    Client certificate for kubelet to authenticate to API server 
+
+ Complex and time consuming when doing manually 
+    kubeadm bootstraps everything above quickly and in the background 
+    maintained by kubernetes itself 
+
+
+
+

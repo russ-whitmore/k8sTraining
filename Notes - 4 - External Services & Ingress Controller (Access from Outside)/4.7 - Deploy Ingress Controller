@@ -1,0 +1,19 @@
+## Deploy ingress controller 
+
+Find the ingress-nginx controller helm chart. In the k8s repo 
+There are commands to install 
+It will add to your repos and then run an update 
+
+Helm install ingress-nginx ingress ingress-nginx/ingress-nginx
+helm ls - will list out helm deploy and all info
+
+kubectl get pod 
+    verify nginx-controller ingress was deployed 
+kubectl get service 
+    ingress services should now be installed 
+
+Create loadbalancer on AWS
+
+Configure loadbalancer in AWS 
+    create https traffic 
+    ingress-nginx-controller-lb

@@ -1,0 +1,39 @@
+##Control Plane and worker nodes
+
+Worker Node in K8s Cluster 
+    VMs which each node has multiple pods on it
+    3 processes must be installed on every Node
+        1. Container Runtime (docker, containerD, cri-o) separate from k8s - responsible for running containers on nodes 
+        2. Kubelet - kubernetes agent or process of kubernetes itself that interacts with the container and the node
+            Starts the pod with a container inside. 
+            Communicates with control plane and ensures containers are run on its node as instructed by control plane
+            Also handles the process of reporting container status and other data about containers back to control plane 
+        3. Kube proxy - load balancer that catches the request and forwards to the respective pod. 
+            Runs on each node and handles some tasks related to providing networking between containers and services in the cluster 
+    Do the actual work     
+
+
+Master/Control Plane - Runs the cluster and a collection of multiple components that manage the cluster. 
+    4 Processes that run on every master node
+        1. kube-API-server, like a cluster gateway. Acts as a gatekeeper for authentication. Validates and forwards request.
+            primary interface to control plane and the cluster - when you are interacting with k8s, it's through the api 
+        2. kube-scheduler, request is handed over from API server to scheduler. 
+            Has intelligence to decide which location to put the pod based on available resources.
+            Scheduler just decides where it's scheduled. The kubelet executes it. 
+            Assigns container to specific worker node 
+        3. kube-controller-Manager - detects cluster state changes, i.e. crashing of pods. 
+            Makes request to scheduler to reschedule pods, then scheduler decides which worker nodes restart pods. 
+            Manages utility processes - run under kube-controller-manager but there are a number of utilities that run under it 
+        4. ETCD - key value store. Is the cluster brain.
+            All changes when something happens is stored here. 
+            How does scheduler know what resources are available
+            ETCD gives all the other tools the information that it's stored
+            Application data isn't stored here.  
+
+Example Cluster Set-up
+    2 Master nodes
+        Require less resources (CPU, RAM, Storage)
+        Can be added easily 
+    3 Worker nodes 
+        Storing the apps, so require more resources
+        Workers can get added easily  

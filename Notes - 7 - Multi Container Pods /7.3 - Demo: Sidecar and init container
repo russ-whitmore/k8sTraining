@@ -1,0 +1,44 @@
+## Sidecar and init container demos 
+
+vim nginx-deployment.yaml 
+add sidecar container that collects logs of app and sends to log service - simulate with echo command 
+    define in containers section 
+    under nginx main container but not inside that section, needs to be inside containers section as an additional container 
+    - name: log-sidecar 
+      image: busybox:1.28 
+      command: ['sh', '-c', 'while true; do echo sync app logs; sleep 20; done"] 
+      save 
+    kubectl delete deployment nginx-deployment 
+    kubectl apply -f nginx-deployment.yaml 
+    kubectl get pod 
+    kubectl logs podname 
+    will see error looking for container name because there are multiple containers 
+    specify with same command
+        kubectl logs podname -c log-sidecar 
+        this will now show the output of the command we set up in the config file 
+    
+add init container 
+    vim nginx-deployment 
+    in addition to containers attribute 
+    add init containers which are on the same level as containers, vs inside containers
+    initContainers: 
+      - name: mydb-available
+        image: busybox:1.28
+        command: ['sh', '-c', 'until nslookup mydb-service; do echo waiting for database; sleep 4; done']
+        save 
+    delete kubectl delete nginx-deployment 
+    kubectl apply -f nginx-deployment.yaml 
+    kubectl get pod 
+    showing 0/2 containers ready - doesn't include init container 
+    because service it's looking for doesn't exist so it's going to loop before it starts the other 2 containers 
+    we can log init containers like other ones
+    kubectl logs nginx-deployment-podname -c mydb-available 
+    will see output 
+    to fix 
+        kubectl create service --help
+        kubectl create service clusterip mydb-service --tcp=80:80
+    kubectl get pod 
+    kubectl logs nginx-deployment-podname -c mydb-available 
+    kubectl get pod 
+    everything should be running 
+    

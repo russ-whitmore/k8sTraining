@@ -1,0 +1,24 @@
+## Configure resource requests and limits
+
+How much resources will your application need?
+
+This is done in the deployment yaml 
+
+under container definition 
+    resources:
+      requests:
+        memory: "64Mi"
+        cpu: "250m"
+      limits:
+        memory: "128Mi"
+        cpu: "500Mi"
+
+Querying defined Resources and Limits 
+    Which pods have resource requests and limits set?
+    kubectl get pod -o jsonpath="{range .items[*]} {.metadata.name}{.spec.containers[*].resources}{'\n'}"
+
+
+Wrap up 
+
+When a node runs out of resources and has to evict a pod, it'll evict the pod first that doesn't have explicit resource definitions. 
+    Another reason to define them 

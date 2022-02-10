@@ -1,0 +1,19 @@
+## Troubleshooting apps 
+
+Check if pods are running 
+Kubectl get pod 
+
+Is pod registered with service 
+kubectl get ep 
+kubectl describe service_name 
+
+Is service accessible 
+nc service_ip Service_port 
+ping service_name 
+
+Check application logs 
+kubectl logs Pod_name 
+
+
+kubectl describe pod Pod_name 
+

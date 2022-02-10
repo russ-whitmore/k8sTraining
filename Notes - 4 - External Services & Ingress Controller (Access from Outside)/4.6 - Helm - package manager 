@@ -1,0 +1,76 @@
+## Helm - package manager 
+
+What is helm?
+
+Package manager for kubernetes - like apt, yum, homebrew etc. 
+    to package YAML files and distribute them in public and private repos 
+
+Example: You want to deploy elastic search 
+    In order to deploy you need a few things
+        1. stateful set 
+        2. configMap 
+        3. Secret 
+        4. K8s user with permissions 
+        5. Services 
+    To bundle these all together separately would be a hassle, helm charts offer an efficient way of doing that
+
+Helm charts 
+    Bundle of YAML files 
+    Create your own helm charts with helm 
+    push them to helm repo 
+    download and use existing helm charts i.e. db apps, elastic etc. 
+    You can reuse configuration that someone else made that'll install and configure what you need 
+
+Need a deployment:
+    helm search (command line) 
+    helm hub 
+    Private registries as well
+        Share in organizations 
+    Templating Engine 
+        made up of multiple microservices 
+        Most values are the same 
+        define a common blueprint 
+        dynamic values are replaced by placeholders instead of values, you'd have syntax 
+    Can create a templating engine 
+        Have a template yaml config that is standard across many different helm deploys 
+            instead of actual values - add {{ .Values.name  }}
+            then create a values.yaml (values in values.name is where the name comes from)
+            the values.yaml file will have the actual config names and be smaller, this will prevent you from having to build a bunch of larger pod config files and just use one instead for all apps 
+        .values is an object created based on values created in the values.yaml file 
+        Values are defined either via yaml file or with --set flag 
+        Practical for CI/CD 
+            You can replace values on the fly - this is how we deploy with Octopus variables acting as the values.yaml file 
+
+    Same application across different environments 
+        Instead of deploying yaml separately across each cluster 
+        You can package them up to make your own application chart that will have all the necessary yaml files 
+        Can use them to redeploy to necessary clusters using 1 command 
+
+Helm chart structure:
+    mychart/ > name of chart 
+    Chart.yaml > meta info about chart 
+    values.yaml > values for the template files 
+    charts/ > chart dependencies 
+    templates/ > the actual template files 
+
+    Command:
+       To deploy: helm install <chartname>
+         Template files will be filled with values from values.yaml 
+         Can optionally have a readme, license file etc. 
+
+    Value injection into template file:
+        Values.yaml 
+        Can be overwritten when executing helm install command 
+        You can define your own values yaml file, refer to it in the helm deploy command and it'll override the original helm chart values.yaml 
+        command - helm install --values=my-values.yaml<chartname>
+            Whichever entries in the value files are added if you decide to override, they will combine in the .values object result 
+        You can also define your preferred values on the command line - i.e. helm install --set version=2.0.0 
+
+Install Helm
+    Check their official documentation 
+    Search for ubuntu 
+    Go with apt and copy commands, execute 
+    install on master 
+    Helm connects to our cluster in the background 
+    Uses the kubeconfig file to connect to the cluster like kubectl 
+               

@@ -1,0 +1,39 @@
+## Liveness and readiness probes - what are they?
+
+Liveness Probe 
+    Why is this important?
+        K8s manages its resources intelligently 
+        Restarts pods when it crashes 
+        Pod runs, but application inside is not in a healthy state 
+        We need to let k8s know in which state our app is 
+        So k8s auto restarts the app 
+        Perform health checks with liveness probes 
+        Liveness probes automatically restarts the pod if the app isn't running 
+
+    How to configure it?
+      under spec section - 3 types of checking the health status 
+      1. Exec probes 
+        Kubelet executes the specified command to check the health 
+        can specify
+      2. TCP probes - kubelet makes probe connection at the node, not in the pod 
+      3. HTTP probes - kubelet sends and HTTP request to specified path and port 
+
+
+Readiness probe 
+    Why is this important?
+        K8s knows the pod state 
+        Liveness probe for application state 
+        Health checks only after container started 
+    What about start up process?
+        Pod created successfully 
+        Application not starting???
+        Perform health checks with readiness probe 
+            Lets k8s know if app is ready to receive traffic
+            Without readiness probe, k8s assumes the app is ready to receive traffic as soon as container starts
+    How to configure it?
+        Configuration very similar to liveness probe 
+        Both check applications availability
+        Readiness probe
+            During application startup 
+        Liveness probe 
+            While application is running 

@@ -1,0 +1,61 @@
+## Create Nginx-deployment.yaml
+
+Copy file from kubernetes documentation
+    Search a deployment manifest configuration example 
+    Copy and paste into an editor
+    save as nginx-deployment.yaml 
+
+Blueprint for pods - Example below:
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  labels:
+    app: nginx
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx
+        ports:
+        - containerPort: 80
+
+Above has its own metadata and spec section - this is under "template"
+    A configuration file inside of a configuration file 
+    This applies to the pod specifically 
+    The blue print for the pod is anything under spec under template 
+        Which image, which port, name of container, etc. 
+
+Make necessary adjustments to deployment file 
+
+Create nginx deployment using deployment manifest yaml file
+    vim nginx-deployment.yaml on master node 
+    copy configuration and make any adjustments if needed
+    save and quit 
+Run deployment 
+   kubectl apply -f  nginx-deployment (-f is file name)
+   New pods with correct amount of replicas should be created 
+If necessary - delete the other test pods 
+    kubectl delete pod test test2 (can delete multiple if separated by spaces)
+        deletes component (pod) and name 
+Name of pod is made up as 2 parts
+    Example: nginx-deployment-78548f848g5-wefw4
+        First section is name of deployment (nginx-deployment)
+        Second section is unique hash for each pod (wefw4)
+
+Check that a deployment was created in the cluster
+    kubectl get deployment 
+    should see deployment and the amount of pods (replicas) and status 
+
+Anything we need to change -
+    We adjust the deployment component, we work with deployments, not pods directly
+        The deployment will restart the pod if there are any changes necessary 

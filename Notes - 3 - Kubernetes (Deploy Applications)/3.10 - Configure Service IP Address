@@ -1,0 +1,43 @@
+## Configure Service IP address
+
+Where is the service IP address range configured?
+    not the same as pod ip addresses 
+    verify by kubectl get pod -o wide 
+
+Cluster IP type
+    default service type
+    Exposes the service on a cluster-internal IP
+    Service only reachable from within the cluster 
+
+Ip address is defined in the kube api server configuration 
+    location: /etc/kubernetes/manifests - 
+    sudo vim /etc/kubernetes/manifests/kube-apiserver.yaml 
+    service-cluster-ip-range= 10.96.0.0/12 - shows CIDR block in kube-apiserver file 
+    Only apps in the cluster can access the services 
+    kubeadm provisiones and creates the kubeapi server
+    kubeadm init --help 
+    Alternative ip address is --service-cidr string 
+    The 10.96.0.0 is the default range 
+    Can check values by running:
+     kubeadm config print init-defaults
+    This will show all default values created by kubeadm 
+    If you need to change any values after you initialize a cluster 
+    Example: change cidr block in kubeapi 
+        sudo vim /etc/kubernetes/manifests/kube-apiserver.yaml 
+        scroll down to --service-cluster-ip-range= 10.96.0.0/12 section 
+        change 10 to 20 
+        save and quit the file 
+        kubectl get pod -n kube-system
+        connection will be refused - apiserver is restarting because of the change 
+        After it restarts we can now connect 
+        Kube api server will be restarted 
+        Services in the cluster before we made the update will be the same - nothing should change
+        New CIDR block applies to anything after the change, not before 
+    To test that:
+        kubectl get service 
+        Need to specify type of service 
+        ClusterIP is what we'll choose
+        kubectl create service clusterip test-new-cidr --tcp=80:80
+        Service was created and should now have a new range 
+        kubectl get service to verify  
+

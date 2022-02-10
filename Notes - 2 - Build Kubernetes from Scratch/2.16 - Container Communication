@@ -1,0 +1,39 @@
+## Container communication 
+
+Smallest unit in k8s is a pod and not a container. Kubernetes runs pods that run containers  
+
+Why is a pod abstraction useful?
+
+POD 
+    Every pod has a unique IP address
+    IP address reachable from all other pods in the k8s cluster 
+
+Container Port Mapping without pods
+    How to allocate ports without getting conflicts? You can only allocate one port once on a single host 
+    Pod abstraction
+        Pod is it's own machine with it's own IP address    
+        Own network namespace
+        Virtual ethernet connection
+        Pod is a host like a laptop
+            Both have IP addresses and a range of ports to allocate to containers 
+        Each container has its own ports 
+    Don't  have to worry about port mappings on the server where the pod is running 
+
+ Replacing Container Runtime easily 
+    If you replace docker runtime with containerD for example 
+    kubernetes configuration would stay the same 
+
+Multiple containers in a pod 
+    Sometimes pods have 2 or more containers inside 
+        Case when need to run a helper to main application
+            i.e. backup, sidecar container, scheduler, authentication gateway 
+    How do containers communicate inside the pod?
+        Containers can talk via localhost and port number - like running multiple apps in laptop
+            Example: localhost:9000 and other container is localhost:8080
+    Pause Container 
+        Pause container is in each pod  
+            Also called Sandbox container
+            Reserves and holds network namespace (netns)      
+            Enables communication between containers in a pod 
+            If a container dies and a new one is created, the pod will stay and keep its IP address
+            If a pod dies however, once a new one is created, it will have a new IP address  

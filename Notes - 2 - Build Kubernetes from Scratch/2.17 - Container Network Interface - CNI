@@ -1,0 +1,71 @@
+##CNI
+
+Pod to Pod communication 
+    No built in solution through kubernetes
+    Expects you to implement a networking solution 
+    But imposes fundamental requirements on any implementation to be pluggable into k8s
+    Called CNI - Container Network interface 
+
+K8s requirements for CNI plugins
+    1. Every pod gets its own UNIQUE IP address
+    2. Pods on same Node can communicate with that IP address 
+    3. Pods on different nodes can communicate with that IP address without NAT (Network Address Translation)
+
+Pod network for complete cluster 
+    K8s doesn't care about the exact IP addresses 
+    called kubernetes networking model 
+
+Many networking solutions which implement this module, some examples;
+    Flannel
+    weaveworks
+    cilium
+    vmware NSX
+
+How CNI plugins implement these requirements
+    How pods talk to each other on the same node 
+        Each node gets an IP address from IP range of our VPC
+        Nodes belong to the same private network - in our case it's in AWS 
+        On each node, a private network with a DIFFERENT IP range is created 
+    IP address ranges in the specified network plugin should NOT overlap with IP address range of the nodes
+        Otherwise the communication will not work 
+    Bridge enables Pod communication on the same node 
+
+How do we make sure each Node gets a different set of IP addresses?
+    We need to ensure UNIQUE IPs 
+    The network plugin defines a CIDR block for the whole cluster 
+        From that range, equal subsets of that IP address. 
+            Example - each node has a /24 but the network plugin defines /12 if there's 2 nodes. 
+    Each node has a unique set of IPs it can give to its pods 
+    VPN on each node with their own sets of IP addresses 
+
+How does "my-app" pod on Node 1 talk to "DB" pod on Node 3 using the DB pod's IP address?
+    They're each on their own private network so they can't access each other directly 
+    Pods can communicate via gateways.
+      Route rules are defined in the route table of the servers that will map each nodes IP address as a gateway to the pod network on that specific node.  
+      Gateway is an IP address of the node
+        That maps to the VPN CIDR block that was created for the pods on that specific node
+        When "my-app" pod sends a request to "my-db" pod, route rule will be used to determine which gateway should be used to access my-db pod network. 
+      Network Plugin creates 1 large Pod network across all nodes in the cluster 
+        Why? All nodes are in the same network?
+            Each node can access the virtual pod network 
+
+ A more scalable solution: Agents on node 
+     What about thousands of nodes in a cluster?
+     Need a more automated and scalable solution
+     CNI plugins solve this 
+
+Network application/plugin is deployed on each node in the cluster as a pod 
+    These pods find each other and form a group to directly talk to each other
+    Example - weavenet - a weave network consists of "peers" - Weave net routers reside on the nodes. 
+        They will share infomration around which pod is running on which Node
+        Example: which pod has this app with this specific IP address 
+        This makes it much easier to scale out 
+
+    We are going to deploy Weavenet - it's easy to deploy 
+        Agent run as DaemonSet      
+
+         
+
+
+     
+

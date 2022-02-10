@@ -1,0 +1,66 @@
+## Debug with temp pods 
+
+Debug with busybox 
+
+Pod network is different from cluster node network
+    Execute troubleshooting commands from within a pod 
+
+    Common images with unix utilities 
+        busybox is an example 
+            doesn't have curl available 
+
+Create pod with busybox image 
+
+    kubectl run debug-pod --image=busybox 
+    kubectl get pod 
+    not running - status is completed
+    another restart - the pod is there but there's no container running inside 
+    kubectl exec -it debug-pod -- sh (won't work, container not found)
+
+Containers are meant to exec a specific task 
+    Container exits once task is done 
+
+
+Where do you see what process a container starts?
+    Container lives as long as process inside lives 
+    Looking a dockerfile on nginx image 
+    CMD in dockerfile 
+
+How do we keep busybox pod alive?
+
+    1. Start with interactive mode (-it)
+        a. kubectl run debug-pod-2 --image=busybox -it (now inside busybox terminal)
+            exit 
+            will now be in a running state 
+    kubectl delete pod debug-pod debug-pod-2 
+
+    2. Define "command" and "args" in Configuration file
+         docker run <image name> <command> overwrites the CMD instruction 
+         not overwrite - but pass parameter 
+    
+    Entrypoint defines the process that starts in a container 
+
+How does this map to k8s?
+    vim bb-pod.yaml 
+    copy and paste pod image yaml 
+apiVersion: v1
+kind: Pod
+metadata:
+  name: busybox-pod
+spec:
+  containers:
+  - name: busybox-container 
+    image: busybox
+    command: ["sh", "-c", "sleep 1000"] - how to override commands in the docker image
+    save and quit 
+
+Execute commands inside the pod 
+
+    kubectl exec -it busybox-pod -- sh 
+    ping without interactive terminal
+    Pass in the command  
+    kubectl exec -it busybox-pod -- bash (if that gives you an error, it means image doesn't have bash exe inside)
+    Need to fallback to shell 
+    kubectl exec -it busybox-pod -- sh -c "printenv"
+    Can also do expressions 
+    kubectl exec -it busybox-pod -- sh -c "netstat -lntp"

@@ -1,0 +1,36 @@
+## Configure emptyDir Volume for sidecar 
+
+Log sidecar needs to access the log files 
+Each container has its own virtual file system 
+Need a shared location each container can access - don't need persisted data 
+
+We need storage that: 
+    Storage can be shared 
+    Doesn't have to be persistent and permanent 
+
+emptyDir Volume 
+    Suitable for multicontainer pods 
+    Can be shared among its containers 
+    All containers in the pod can read and write the same files in the emptyDir volume 
+    emptyDir volume is initially empty 
+    Is first created when a pod is assigned to a node and exists as long as that Pod is running on that node 
+    When pod is removed from a node, the data is deleted permanently 
+
+Configure emptyDir volume 
+    Don't need PV or PVC components 
+
+    On same level as containers of your deployment file - in this example: nginx 
+    volumes: 
+    - name: log-data 
+      emptyDir: {} (only need empty curly braces)
+    
+    volumeMounts: 
+    - name: log-data 
+      mountPath: /var/log
+      can also grab this portion and add to sidecar container as well - this will allow both containers to access emptyDir
+
+Testing:
+    Simulate container writing into log 
+    
+
+

@@ -1,0 +1,49 @@
+##AWS Basics - Pre-req
+
+1. Create AWS account
+    Fill out form, address etc on AWS home page 
+2. Get Free tier on AWS which is free for one year 
+    We will be using EC2
+3. Root user is created by default
+    Has access to all services and feature. Unlimited privileges
+4. Create admin user with less privileges than Root to manage AWS account  
+    Go inside IAM service dashboard
+    Click on users
+    Click on add user button
+    Name user: Admin 
+    Access - programmatic and AWS console access
+    Autogenerate password
+    Check user must Create a new password on login
+    go to next
+    Assign permission by going to "Attach existing policies directly" on the add user page
+    AdministratorAccess is going to be assigned to this user 
+    Add tag to the user if you want - do have to in this case. Skip
+    Will see a summary page, once everything looks correct, hit "Create User"
+    Will need to look at password and secret access key and save them securely by downloading the .csv file 
+5. Login with admin user
+    Select IAM user
+    Account ID is in downloaded file, can use link directly which will fill out ID automatically
+    iam username will be admin 
+    password is in the file 
+    Will need to update and change password
+6. VPC - Virtual Private Cloud 
+    Under networking and content delivery section 
+    Is your private network in AWS - completely isolated
+    Can create in a specific region - as many as you want
+    Region consists of multiple availability zones 
+    Virtual machines will run in one of those AZs 
+    VPC will span in that region 
+    In each region, VPC isolates where your virtual servers are compared to other users
+    Multiple VPCs in different regions 
+    Virtual representation of a network infrastructure 
+    Subnet for each availability zone 
+    Internal IP address range on a VPC 
+    Any new instance will assign a new range, meant for traffic inside VPC to communicate with internal 
+
+7. Internet gateway connects VPC to the outside world 
+8. Secure your components
+    control traffic that accesses your VPC
+    Control what traffic goes out - firewall basically 
+
+
+

@@ -1,0 +1,33 @@
+##Nodeport 
+
+ClusterIP = internal service
+NodePort = external service 
+
+kubectl delete svc nginx-service 
+
+vim nginx-service.yaml - ClusterIP is default in service config file under spec: type:  
+    in spec:
+        type: NodePort
+under ports:
+        nodeport has a third port called nodeport - needs to be added as an extra line under ports 
+
+What is a nodeport?
+
+    When we create an internal service from our pod that service is accessible from other pods in our ClusterIP
+    When we create a nodeport, it creates an internal service but it also opens ports on each worker node in the cluster to make it accessible from the outside 
+
+    There is a dedicated port range for nodeports
+        Going to security groups in AWS 
+            We configured a FW rule from 30000 - 32767 
+                That's the port range when creating a nodeport - needs to be within the above range 
+
+    Add that port into the config file in the keypair under ports section nodePort: 30000
+    Save and quit 
+
+    apply - kubectl apply -f nginx-service.yaml
+    now service will show up but be a nodeport as type
+
+Nodeport service is now accessible outside the cluster on IP address of node + node port 
+    When request comes in - request will be forwarded to the internal service IP address 
+
+

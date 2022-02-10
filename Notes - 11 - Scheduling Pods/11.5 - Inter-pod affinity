@@ -1,0 +1,41 @@
+## Inter-pod affinity 
+## Inter-pod affinity 
+
+Dynamic infrastructure 
+    Nodes get added and removed based on workload 
+    Collecting logs on Master nodes on 5 nodes 
+    5 Replicas 
+    Node selector on master nodes 
+    There's only 1 master node so what happens to the other replicas?
+    They all move onto the master node 
+    We don't actually want that, we want 1 replica per node 
+    How to solve this?
+        Inter-pod Anti-affinity rule 
+          Allows you to constrain, which nodes your pod is eligible to be scheduled, based on labels
+          on pods that are already running on the node 
+            In other words: This pod should not run on worker1 if worker1 is already running one or more pods with a specific label 
+            In our example: don't run pod on a node that already runs this Pod's replica 
+
+Inter-pod-affinity 
+    Imagine: 
+        Our app works with etcd only 
+        We only want to run the app on those nodes that run etcd 
+        Inter-pod affinity 
+            Schedule our pods only on nodes that have etcd running on them 
+        
+        Inter-pod anti-affinity
+          and which do not have another replica of my-app already running   
+          vim pod-interpod-affinity.yaml 
+          copy pod config 
+        
+Wrap up 
+
+Node affinity 
+    node labels 
+
+Inter-pod affinity 
+    pod labels 
+
+Similar to DaemonSet 
+    Schedules 1 replica on each worker node 
+    

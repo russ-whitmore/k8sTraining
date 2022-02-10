@@ -1,0 +1,33 @@
+## Kubernetes - core concepts
+
+What is Kubernetes?    
+    Open source orchestration tool
+    Developed by google
+    Manages containers
+    Helps manage containerized applications in different environments (cloud, hybrid, VMs)
+    Portable extensible open-source platform for managing containerized workload
+    k8s - short for kubernetes - the 8 represents the 8 letters between k and s 
+
+What problems does it solve? 
+    Need for container orchestration technologies
+        Trend from monolith to microservices
+        Increased usage of containers
+
+What features do orchestration tools offer?
+    Highly available
+    Scalable/More flexibility
+    Disaster recovery - backup and restore
+    
+Cluster: 
+Builds a layer of abstraction around those servers and create a cluster
+     Cluster - a group of servers that k8s groups together 
+
+Features: 
+
+    Container orchestration 
+        Primary purpose of k8s is to dynamically manage containers across multiple host systems
+    Application reliability 
+        K8s makes it easier to build reliable, self-healing, and scalable applications 
+    Automation 
+        Kubernetes offers a variety of features to help automate the management of your container apps 
+        

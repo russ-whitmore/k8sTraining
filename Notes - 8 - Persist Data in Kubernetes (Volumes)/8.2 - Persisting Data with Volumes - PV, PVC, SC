@@ -1,0 +1,132 @@
+## Persisting data 
+
+##How to persist data in k8s using volumes 
+The need for volumes 
+    No data persistence out of the box 
+    Need a storage that doesn't depend on the pod lifecycle so new pod can pick up where the old one left off 
+    Storage must be available on all nodes, not just 1 existent
+    Storage needs to survive even if cluster crashes 
+
+Another use case 
+    directory - session files for app, can configure this storage using persistent volume 
+    cluster resource like ram or cpu used to store data 
+    gets created via k8s yaml file 
+    define kind: PersistentVolume
+    spec: i.e. how much storage
+    needs actual physical storage, either local, cloud storage ,etc. 
+Where does storage backend come from?
+    K8s doesn't care about actual storage 
+    Gives you an interface that we have to take care of 
+    Need to decide what type of storage we need 
+    need to create, manage by ourselves 
+    Storage in k8s is an external plugin to the cluster 
+    Can have multiple storages configured for the cluster 
+        1 uses local, another uses cloud, etc or 1 app uses multiple storage types 
+    Use that physical storages in the spec section: 
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-name
+spec:
+  capacity:
+    storage: 5Gi
+  volumeMode: Filesystem   
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/data"
+
+
+Depending on storage type, spec attributes differ. 
+Persistent Volume are not namespaced
+    Accessible to the whole cluster 
+    To all namespaces 
+
+Local vs. Remote Volume types
+    Each volume type has its own use case 
+    Local volume types violate 2 and 3 requirement for data persistence
+        Being tied to 1 specific node 
+        Surviving cluster crashes 
+
+    Who creates persistent volumes and when?
+        PV are resources that need to be there before the pod that depends on it is created 
+
+2 roles:
+    K8s Admin and K8s Users
+    K8s admin sets up and maintains cluster 
+    K8s user deploys application to cluster 
+    K8s admin provisions storage resource 
+    Creates PV components from specific storage backends depending on what's needed 
+        The devs will know storage is there and can be used by their apps
+        They need to configure their app to use those volume storages 
+            PVC or persistent volume claims does that 
+            PVC claims a volume with certain capacity which is defined in the claim 
+            Access type is another attribute - any persistent volume that satisifies that claim will be used 
+            volumes attribute references persistent volume claim 
+
+Levels of Volume abstraction 
+
+    Pod requests the volume through PV cliam 
+    Claim tries to find a volume in cluster 
+    Volume has the actual storage backend 
+    Claims must be in the same namespace 
+    Volume is then mounted into the pod 
+    Volume is mounted into container 
+    Can mount volume in some or all containers 
+    App can now read and write into storage 
+
+
+
+Why so many abstractions?
+    Admins provision storage resource
+    User creates claim to PV
+    User doesn't care where the storage is, just as long as it has persistence and safely stored 
+    Easier for developers 
+
+ConfigMap and Secret
+    Local volumes 
+    not created via PV and PVC 
+    Managed by k8s 
+
+    configuration file for your pod 
+    certificate file for your pod 
+        Need a file available to your pod 
+    
+    Create a ConfigMap or Secret component 
+    Mount that into your container/pod 
+
+Recap:
+    Volume is directory with some data 
+    These volumes are accessible in containers in a pod 
+    How made available, backed by which storage medium - defined by specific volume types 
+
+Pod specifies what volumes to provide 
+    Where to mount those in the containers?
+        Apps can access mounted data here: /var/www/html 
+        If you have multiple containers, you can decide which container should get access to that storage 
+
+    Different volume types in a pod 
+        
+Storage class 
+    Admins configure storage
+    Create persistent volumes
+    k8s users claim PV by using PVC 
+    Creates or provisions persistent volumes dynamically 
+        when PVC claims it 
+        define in the storage class component
+            provisioner attribute in yaml file 
+            each storage backend has own provisioner 
+            internal provisioner - kubernetes.io 
+            external provisioner 
+            configure parameters for storage we can to configure PV 
+    Abstracts underlying storage provider 
+    Parameters for that storage 
+
+Storage Class Usage 
+    Requested by PersistentVolumeClaim 
+    storageClassName: attribute reference storage class to be used to create a PV that satisifies the claim of PVC 
+    SC creates PV that meets the needs of that claim 
+    
+
+

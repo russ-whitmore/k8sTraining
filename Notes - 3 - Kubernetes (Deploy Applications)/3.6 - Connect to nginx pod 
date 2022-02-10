@@ -1,0 +1,29 @@
+## Connecting to your NGINX pod 
+
+Deploy test pod 
+    will curl to nginx from inside that pod 
+    no need for a deployment config file 
+    create pod with kubectl run 
+    kubectl run test-nginx-svc --image=nginx
+    kubect get pod - to verify pod was started 
+
+    How to execute commands from inside the pod?
+        kubectl exec - lets us execute commands inside the pod 
+        kubectl exec -it (it stands for interactive terminal) 
+        kubectl exec -it test-nginx-svc -- bash
+            getting interactive terminal in order to execute bash commands inside test-nginx-svc pod 
+        This is a great way to debug - you'll have root inside the pod 
+        exit will leave the pod 
+        kubectl get svc
+        kubectl exec -it test-nginx-svc -- bash 
+        We want to curl the nginx-service from inside the pod 
+        To do that: 
+            run the exec command above
+            curl http://(ipaddress of nginx-service and port (8080))
+            curl http://10.98.83.8:8080 - Example 
+        You should get output from nginx 
+            curl http://nginx-service:8080
+                Use the service name to ensure the service name is resolved to the IP address
+        
+
+        

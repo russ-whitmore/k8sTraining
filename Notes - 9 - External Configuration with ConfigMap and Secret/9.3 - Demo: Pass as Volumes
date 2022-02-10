@@ -1,0 +1,43 @@
+## Pass as volumes 
+
+Create config map 
+    vim my-configmap.yaml 
+    apiVersion: v1
+    kind: ConfigMap 
+    metadata:
+      name: mysql-config-file 
+    data:
+      mysql.conf: 
+        [mysqlconf]
+
+
+Create Secret 
+    vim my-secret.yaml
+    apiVersion: v1
+    kind: Secret 
+    metadata:
+      name: mysql-secret-file 
+    type: Opaque
+    data: 
+      secret.file: |
+        
+Reference in Deployment 
+    vim myapp-deployment-file.yaml 
+    copy deployment file simulating my-db pod
+
+    configMap and secret are k8s volume types  - define volumes of Pod Level 
+    add as configuration in deployment under the pod spec section 
+    volumes: 
+      - name: db-config 
+        configMap: 
+          name: mysql-config-file
+      - name: db-secret
+        secret:
+          secretName: mysql-secret-file  
+
+
+ Note when updating ConfigMap or Secret
+
+ Whenever we update content of configmap or secret the pods aren't automatically updated 
+ In order to reload config, the pod needs to be restarted 
+kubectl rollout restart deployment/my-db - allows you to restart dataset and all its pods

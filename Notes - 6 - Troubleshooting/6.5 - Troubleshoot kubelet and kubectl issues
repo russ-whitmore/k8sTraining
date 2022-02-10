@@ -1,0 +1,39 @@
+## Troubleshoot kubelet and kubectl issues 
+
+kubectl get node - we see worker1 is not ready
+how can we debug?
+usually indicates kubelet process is a problem on that node 
+ssh into worker1 and troubleshoot kubelet 
+
+check kubelet status 
+    service kubelet status 
+    (is in activated status, see failure that shows no file or directory)
+    check file path to validate 
+    find where kubelet exec binary is located 
+    which kubelet 
+    sudo cat /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+    shows config that starts kubelet 
+    wrong path in execstart entry - change path and save 
+    need to restart kubelet service so it can read changed config 
+    sudo systemctl daemon-reload 
+    sudo systemctl restart kubelet 
+    service kubelet status 
+    kubectl get node 
+
+Troubleshoot kubectl connection issue 
+    kubectl commands stop working 
+    either an error or the command hangs 
+
+    kubectl is defined in kube config file - cat ~/.kube/config to validate everything is correct 
+    validate that certificate is correct 
+    copy cert data - echo paste | base64 --decode 
+    check that it's the same the cluster is using 
+    sudo cat /etc/kubernetes/pki/ca.crt - this looks correct 
+    check if endpoint is correct 
+    we know it's running on master node in port 6443 - validate master node ip address is correct
+    check in console, - looks different than in master node. 
+    can also verify in /etc/hosts file 
+    vim ~/.kube/config 
+    paste correct IP address of master node 
+    kubectl get node 
+    kubectl cluster-info 

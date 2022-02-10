@@ -1,0 +1,62 @@
+##Loadbalancer
+
+Allowing the IP address and port to be exposed and using the nodeport service is complicated and not safe
+
+Another service type is Loadbalancer that actually works better than nodeport
+Nodeport is great for testing but not great for long term
+
+Set up Loadbalancer
+
+    Delete nginx-service nodeport edition 
+        kubectl delete svc nginx-service 
+    Edit nginx-service.yaml 
+        change type: LoadBalancer from nodeport 
+        Everything else stays the same - including nodeport
+    Apply change
+        kubectl apply service nginx-service.yaml
+        kubectl get svc 
+        The type will now show as Loadbalancer and external-ip will be pending instead of none
+            The reason the external ip is pending is because it's not managed/configured by k8s
+            Needs to be set by whoever creates a loadbalancer that sits outside the cluster 
+            Who's responsible for creating the load balancer: 
+                In this case, cloud providers which offer k8s managed services (EKS, AKS etc.)
+
+
+
+
+How does the Loadbalancer service actually work?
+    On top of the internal service that listens on the service port (8080 for example) 
+    It creates a Loadbalancer in front of the cluster nodes outside of the k8s cluster 
+    Accepts the request from outside and loadbalance to one of the worker nodes on the node port
+    Accessible at own IP address and Port  
+    Loadbalancer is not created inside the cluster 
+    Forwards the request to the internal ip address - clusterIP 
+        Loadbalancer has all 3 types, Loadbalancer, Node Port, ClusterIP svc 
+
+
+What if I have a self-managed k8s cluster?
+    You need to create your own - not available out-of-the-box 
+    When using managed k8s service, like EKS, the cloud native loadbalancer will be provisioned for your service 
+
+To do that in AWS without EKS - 
+    EC2 > load balancers 
+
+Create Loadbalancer in AWS - not required to know how this works for exam 
+    http > create 
+    name: test-lb-svc 
+    internet facing 
+    select zone : same zone where nodes are 
+    need to select 2 subnets of the VPC - 1 where worker nodes are running 
+    Next 
+    Choose default security group 
+        Add port 30000 because it's already open 
+        Give it a name - test-rt 
+        Target type - instance 
+        Select worker nodes only on port 30000
+    We now put a loadbalancer in front of the cluster on AWS 
+    Review and create 
+
+Access service with loadbalancer
+    Loadbalancer has a domain name 
+    Copy and paste on port 80, then copy and paste into browser 
+    We should now see the ngnix splash page 

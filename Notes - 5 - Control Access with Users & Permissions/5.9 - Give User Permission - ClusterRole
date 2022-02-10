@@ -1,0 +1,47 @@
+## Give user permission 
+ Recap:
+    User created in cluster 
+    cert signed by ca 
+    kubeconfig
+
+
+Give permission to CRUD common resources in all namespaces 
+    1. Create cluster role with all specified permissions
+        view pods, create pods, delete pods, view... 
+    2. Create ClusterRole binding to bind that cluster role to Tom's user 
+
+Create cluster role 
+    kubectl create --help 
+    kubectl create clusterrole --help
+    kubectl create clusterrole dev-cr --verb=get,list,create,update,delete --resource=deployments.apps,pods --dry-run=client -o yaml > dev-cr.yaml
+    vim dev-cr.yaml 
+    adjust config 
+        look to see which API groups and resources belong to API groups   
+    Make necessary changes based on video 
+    kubectl apply -f dev-cr.yaml 
+    We can't apply this without using our own kubeconfig file (admins)
+    kubectl --kubeconfig config apply -f dev-cr.yaml 
+    kubectl --kubeconfig config get clusterrole 
+    kubectl --kubeconfig config describe clusterrole dev-cr 
+
+Create clusterole binding 
+
+    kubectl create clusterrolebinding --help 
+    kubectl create clusterrolebinding dev-crb --clusterrole=dev-cr --user=tom --dry-run=clint -o yaml > dev-crb.yaml 
+    view config file vim dev-crb.yaml 
+    roleRef = reference existing role 
+    subjects = reference existing User, Group or ServiceAccount 
+    kubectl apply --kubeconfig config -f dev-crb.yaml 
+    kubectl describe --kubeconfig config clusterrolebinding dev-crb
+
+Checking API access 
+
+     before - kubectl get pod isn't executable as tom user 
+     kubectl get pod now works 
+     kubectl get node shouldn't work - verify 
+     kubectl auth --kubeconfig config can-i get node --as tom (check access command )
+     will give yes or no answers - efficient way to check perms 
+     Unless specified in clusterrole - you won't have access 
+
+
+

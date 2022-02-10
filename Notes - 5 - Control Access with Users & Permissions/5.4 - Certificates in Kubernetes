@@ -1,0 +1,18 @@
+##Certificates in kubernetes
+
+Client Certificates in k8s 
+    kubeadm init generates all needed certs for k8s components
+    stored in /etc/kubernetes/pki 
+    server certificates are stored in there 
+    etcd certs are stored /etc/kubernetes/pki/etcd
+
+Who signed those certificates?
+    Kubeadmin generated a CA for k8s cluster 
+    etcd-ca and kubernetes-ca
+
+Why are they trusting a auto-generated CA?
+    All clients got a copy of the k8s ca that's signed the API server certificate in the kube-config files 
+    Just like OS has a list, we add a new CA to the list of the client 
+    K8s CA are trusted within k8s by all components who have a copy of it 
+
+    

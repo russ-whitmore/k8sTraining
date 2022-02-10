@@ -1,0 +1,43 @@
+## NodeName and Node Selector - Assigning Pods to nodes 
+
+Pods are automatically scheduled on one of the worker nodes 
+Scheduler decides intelligently, where to place the pod 
+    Which node has the most capacity and is the least busy 
+
+In some cases, we may want to decide ourselves 
+
+    nodeName does that for us 
+    This attribute value will be a specific node name 
+
+vim pod-worker1.yaml
+    add pod config 
+    inside spec
+    spec: 
+      containers:
+      - name: nginx
+        image: nginx
+      nodeName: worker1
+      kubectl apply -f pod-worker1.yaml 
+
+will now be scheduled on worker1
+
+Node Selector 
+    What about dynamic node names?
+    Not enough resources?
+    
+    nodeSelector attribute allows for specifying nodes via labels
+
+    1. Attach label to the node 
+    2. Add nodeSelector field to Pod configuration 
+        You can specify disktype, high CPU/RAM and schedule pods selectively on them 
+
+    kubectl get node --show-labels 
+    kubectl label node worker2 type=CPU
+    kubectl get node --show-labels 
+
+create pod definition file that'll run on worker2
+Copy/paste pod config file 
+inside spec under containers - same level 
+nodeSelector:
+  type: cpu 
+kubectl apply -f pod-worker2.yaml 

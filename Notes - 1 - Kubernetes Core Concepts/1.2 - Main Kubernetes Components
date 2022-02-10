@@ -1,0 +1,78 @@
+## Components
+Node 
+    Physical or virtual server
+
+Cluster
+    Group of servers 
+
+Pod  
+    Smallest unit in kubernetes 
+    layer on top of container
+    is meant to run 1 application inside of it per Pod
+    Each pod gets its own IP address
+    Pods are ephemeral - can die easily
+    New IP address on recreation or restarr
+
+Service
+    Static IP address that can be attached to each pod
+    Permanent IP address with DNS name
+    Load balancer
+    Lifecycle of pod and Service not connected
+    If the pod dies, the IP address stays the same
+
+
+External Service
+    Opens service to external sources - i.e. Website 
+
+Internal Service
+    Type of service you specify - i.e. DB service 
+
+Ingress
+    Instead of service, goes to ingress and that forwards the request to the necessary service
+
+ConfigMap
+    Your external configuration to your application
+    Contains config data i.e. URLs of DBs or other services 
+    Connects to the pod so the pod gets the data it contains
+    If you change the name or endpoint of the service just change the ConfigMap vs redoing the entire thing
+    Don't put password or username in ConfigMap, use Secret
+
+Secret
+    Stored in base64 encoded
+    kubernetes secrets are, by default stored unencrypted in the API server's underlying data store (ETCD)
+    Anyone with API access can retrieve or modify a secret. So can anyone with access to ETCD.
+    In order to safely use secrets:
+        1. Enable "Encryption at rest" for secrets
+        2. Enable or configure RBAC rules that restrict reading data in Secrets.
+        3. Where appropriate, also use mechanisms such as RBAC to limit which principals are allowed to create new Secrets or replace existing ones.
+    Passwords, certificates or anything you don't want others to have access to would go here.
+    Can use environmental variables to access these in your pod.
+    
+Volumes
+    Physically attaches storage, either local or remote (outside of the kubernetes cluster)
+    Storage on local machine
+    Think of this as an external HD plugged into the cluster 
+    Kubernetes doesn't manage data persistence. 
+
+Deployment
+    Blueprint for application pods
+    You create deployments, not pods
+    Can scale up or down pods through deployments 
+    Abstraction of pods
+    In practice, mostly work with deployments and not pods
+    DBs can't be replicated with deployments 
+
+StatefulSet
+    Meant for applications like Databases 
+    Should be created using statefulsets, not deployments to deploy databases
+    Makes sure DB read and writes are synchronized 
+    This can be tedious
+    DBs are usually outside kubernetes cluster 
+
+Daemon Sets 
+    Kube-proxy needs to run on every Node
+    Component that automatically calculates how many replicas are needed based on existing nodes
+    Deploys just 1 Replica per Node
+    When nodes are added, pods are added to them. 
+    No need to define replica configuration
+    automatically scales up or down 

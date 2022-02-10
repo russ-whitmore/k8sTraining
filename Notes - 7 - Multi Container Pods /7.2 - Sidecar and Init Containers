@@ -1,0 +1,20 @@
+## Sidecar and init containers 
+
+You can have multiple containers inside the pod 
+Main and helper app 
+Helper app - sidecar 
+    Usually operates asynchronously 
+    Can talk to each other using localhost 
+    Can share data 
+    can have multiple sidecar containers in a pod 
+
+Init container 
+    env prep: set env variables, test environment etc. Different from sidecar  
+    sidecar containers run the entire time, not just at the start 
+    Sidecars start as the same time as the main container 
+    Init containers run once in the beginning and exits 
+    Main container starts afterwards 
+    Used to initialize something 
+    Add init section in pod config - k8s will know to start it first 
+
+

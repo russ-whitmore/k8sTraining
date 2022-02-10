@@ -1,0 +1,11 @@
+## Other modes of authorization
+
+
+RBAC is one of 4 authorization modes 
+
+    Node, ABAC, RBAC, Webhook are the 4 supported 
+    You can choose more than one authorization mode 
+    Set in API server configuration 
+    sudo vim /etc/kubernetes/manifests/kube-apiserver.yaml 
+    parameter called --authorization-mode=
+    This is where you can edit the mode 

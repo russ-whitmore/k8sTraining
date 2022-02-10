@@ -1,0 +1,63 @@
+## TLS certificates (Pre-req)
+
+What and why TLS certificates
+    A way to establish trust and secure connection
+    One party is always initiating the request 
+        Client
+    Server/application replies to the request 
+
+What does secure communication mean?
+    Without unencrypted communication, a user logging in to a bank for example would have plain text username/password
+    This would allow a hacker who intercepts the traffic to see those credentials instantly.
+
+How do we prevent that?
+    Encrypt the data
+    Take a random string to change that into unreadable text
+    Encryption key - randomly generated used to encrypt plain text data 
+    Symetric Encryption is when you use the same key to encrypt and decrypt the data
+
+Asymetric Encryption
+    Key pair
+    Encrypt with one key and decrypt with another 
+    Use that encryption to securely login 
+    Server will have a second key to decrypt clients traffic 
+    The key that clients have is public and can be shared with anyone 
+    The decrypt key or private key must stay private and on the server however
+
+Impersonate servers
+    Hackers will try to impersonate the server by making an identical website
+    Hacker will act as a real server
+    Have it's own keypair 
+    Client will establish a secure connection with hacker's server
+    To avoid:
+        How can client validate the public key?
+        Certificates need to get public key signed and certified 
+            CA or certificate authority
+            Public key is embedded
+            Name of website and subdomains 
+            Signature of CA
+
+When you access the real website in the browser
+    Browser(client) will check for certificate
+    Make sure cert is valid 
+    Make sure signature is valid 
+
+Server requesting cert from client 
+    Client certificates
+        Gets signed by trusted CA
+        This happens in the background 
+
+Trusted vs Untrusted Certificate authority
+    How does the browser know that the CA is legit?
+        Official list of all authorized and acknowledged CAs 
+        Each modern OS has a list already packaged 
+        Browsers are able to verify because of this 
+        Browser will recognize CA and give you a warning - this could be hacker generated
+            Called self signed certificate 
+
+Process of getting certificate
+    Create key-pair
+    Generate signing request 
+    CA validates information 
+    CA signs and issues certificate to you 
+    This is called a public key infrastructure or PKI 

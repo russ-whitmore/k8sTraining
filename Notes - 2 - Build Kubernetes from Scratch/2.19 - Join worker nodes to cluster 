@@ -1,0 +1,65 @@
+## Joining worker nodes to the cluster 
+
+We already installed:
+    Containerd
+    kubeadm
+    kubectl
+
+Also make sure sudo swapoff -a is executed on all nodes 
+
+Join nodes to cluster:
+Output after kubeadm command but we lost the generated token 
+To get that token back so we get the command we need to join the cluster. 
+    So control plane can identify the worker 
+
+To print out the command anytime:
+    On the master node, print out a new token 
+    kubeadm -help will show any available commands 
+    kubeadm token --help will show subcommands of kubeadm token command 
+    kubeadm token create --help show which opens to create a token 
+    kubeadm token create --print-join-command - will print the entire command we can copy and execute on worker nodes
+        This output is what we run on each worker node. This will join the node to the cluster 
+    Run on each worker node, requires sudo privilege 
+
+While worker nodes are being added - there are two phases 
+    1. preflight 
+        run join pre-flight checks 
+    2. kubelet-start 
+        write kubelet settings, certificates and restarts the cluster 
+
+Worker nodes should now be joined
+    To check - kubectl get node 
+        We should see the corresponding workers 
+        Check extended output - kubectl get node -o wide 
+    Check pods on all nodes  
+        kubectl get pod -A -o wide 
+
+Check weave network 
+    The weave net pods on all the nodes should be talking to each other 
+    To verify - kubectl get pod -A | grep weave-net
+    Take the name of one of the weave-net pods 
+    Kubectl logs (name of weavenet pod) -n kube-system (namespace)
+        Need to specify container because it's not running as a pod
+        append by adding -c (container name) on the end of the last command 
+    Will see error messages saying it can't connect to IP addresses 
+    The reason for this is the weave-net ports aren't opened on 6783 
+    Go into AWS, edit inbound rules, and open the port in each security group - specifying the Private IP range of the network
+    Rerun the command Kubectl logs (name of weavenet pod) -n kube-system (namespace) -c (container name) -f (streams the logs to show live output)
+    You should now be able to verify the communication. 
+        Try rebooting first if it doesn't initially show connection 
+    Can again verify by outputting weave pods - kubectl get pod -n kube-system -o wide | grep weave
+    kubectl exec -n kube-system (weave-net pod name) -c weave --/home/weave/weave --local status
+
+
+Verify by adding pods on worker nodes 
+
+Schedule a test pod 
+    kubectl run test --image=nginx
+    This schedules a pod called test with nginx image in the default namespace 
+    kubectl get pod -w 
+    kubectl get pod -o wide 
+        Should see it running on the workers 
+    kubectl run test2 --image=nginx 
+        test for second worker node 
+    kubectl get pod -o wide 
+        should verify IP range is correct 

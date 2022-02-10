@@ -1,0 +1,48 @@
+## Pass as Env Variables 
+
+1. Create ConfigMap component 
+2. Create Secret component
+3. Pass data to pod using env variables 
+
+
+Create configmap 
+
+mkdir external-config 
+cd external-config 
+vim my-configmap.yaml 
+
+apiVersion: v1
+kind: ConfigMap 
+metadata:
+  name: myapp-config 
+data: 
+  db_host: mysql-service
+:wq
+
+Create mysecret 
+vim my-secret.yaml 
+apiVersion: v1
+kind: Secret
+metadata:
+  name: myapp-secret
+type: Opaque  
+data: 
+  username: 
+  password: 
+
+go to worker1 - 
+echo -n "myuser" | base64
+echo -n "mypwd" | base64 
+copy and paste into data area for username and password 
+
+kubectl apply -f .
+
+Reference in deployment 
+vim myapp-deployment.yaml
+kubectl create deployment myapp-deployment --dry-run=client -o yaml > myapp-deployment.yaml
+env: 
+- name: MYSQL_USER 
+  valueFrom:
+    secretKeyRef:
+      name: myapp-secret
+      key: username 

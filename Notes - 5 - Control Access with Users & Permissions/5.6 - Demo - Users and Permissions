@@ -1,0 +1,19 @@
+## Demo - Users and Perms 
+
+Create user called Tom 
+Generate certificates for Tom 
+Getting it signed by k8s ca 
+Create client key for Tom using openSSL 
+Create CertificateSigningRequest for key 
+Approve CertificateSigningRequest
+Get signed certificate
+Provide Tom with signed certificate
+Allow Tom to access the cluster using his own certificate
+Set permissions for Tom user 
+Give permissions to create, delete, update k8s resources 
+Validate user permissions 
+
+
+Create non human user for ci/cd tool to access cluster with own users
+Create service account for Jenkins 
+Give permissions to create, delete, update k8s resources 

@@ -1,0 +1,115 @@
+##Creating nginx service 
+
+We need a service so other pods or external applications can access the nginx pods
+    Make them accessible on a permanent ip address using a service name 
+    load balances traffic on multiple replicas among the pods 
+
+Create service config file 
+    Copy from kubernetes documentation 
+    Open service file in vscode 
+    Will have same metadata section in the yaml file 
+    Same spec section 
+    Every component spec is different 
+    In deployment we have a spec template for a pod 
+    In service we have a port configuration 
+
+Example of Service yaml file 
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+spec:
+  selector:
+    app: nginx (- Defines the label for the pods it wants to find - needs to match app under labels in metadata in the deployment yaml file)
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 9376
+
+Main part is the ports section under spec 
+
+Port configuration 
+    Ports in a service and pod 
+       Service has a port where the service itself is accessible
+       If another service sends a request to this service - it needs to send it under port 80 (port in config file)
+       Other port that needs to be configured correctly is targetPort
+        targetPort will need to match port for the deployment - we want to access nginx pods with this service 
+        Deployment port number was set to 80 in the nginx-deployment.yaml file 
+        TargetPort for nginx-service.yaml will need to be set at 80 to match 
+        Both ports will initially be set to 80 (port and target port) in the service config file 
+        They don't need to be the same - (Only targetport for service and service port for deployment)
+        Can change port in service config to 8080 
+        Each port configuration defines where on each port can we access the service ip address
+        On which port will service forward the request to the pods it's connected to
+    Service is meant to communicate with pod 
+    When Nginx service gets request to send to nginx pods, it should send it to port 80
+    When another pod makes a request - it sends a request to the service and port number 
+        Service takes request and forwards to the pods behind it on the port that the applications are listening at
+
+Labels and Selectors 
+    This is how a service knows which pods it should forward the request to - labels/selectors
+    The way the connection is established is using labels and selectors 
+    Metadata part has labels, spec part has selectors
+
+    Metadata: 
+        In metadata each component has a key-value pair
+        Could be any you can think of - in this case - app: nginx 
+        We give pods created the label through the template blueprint
+        We tell deployment to match all labels with (app: nginx) to create that connection 
+        These two labels are used by the service selector 
+            Makes a connection between the service and the deployment/pods 
+        Label acts as an identifier of a deployment like a name 
+        This is the way to identify the deployment 
+        Is a required attribute on the pod 
+        Can have multiple labels on a component
+        A standard key is "app: applicationname"
+
+Review:
+    Labels attach key-value pair to components
+        Should be meaningful and relevant to users
+    Label Selector: user can identify a set of components that have a certain label 
+    When a service gets a request - it will forward a request to any pods that have the specified label (nginx) on the specified port (80)
+
+Create service yaml on master 
+    Copy config over 
+    vim nginx-service.yaml 
+    Adjust any configuration - ensure that labels, ports and specs are all configured correctly 
+    Save 
+    kubectl apply -f nginx-service.yaml (-f is for file name that you want to specify)
+    To list services in cluster 
+    kubectl get service or get svc 
+    Should see service, ports and IP address 
+Ensure service is connected to pods 
+    kubectl describe svc (name of service) - this will give us detailed info of the service - how to debug 
+    selector, port and target port should all match 
+    Should see endpoints that match nginx deployment pods and port numbers 
+    kubectl get pod -o wide to make sure those ip addresses match the endpoints 
+Another component that gets created is an endpoint component
+    kubectl get ep (endpoint)
+        Give you list of services and endpoints to ensure they are correct 
+
+How does the service forward request to IP address 
+    Service is not a process or app that's running 
+    It's a virtual IP that's accessible through the cluster so it's not bound to one node 
+    The request to that VIP get forwarded to the actual processes which are the pods 
+        This is done by kubeproxy -
+            Kubeproxy is responsible for maintaining the list of Service ip addresses and and corresponding pod IPs
+            Request is sent to service - kubeproxy intercepts request, checks in its list which pod endpoints are registered for the service IP 
+            Will pick one of the pods to forward the request to 
+
+Check status 
+    3rd part of config file is status 
+    To see autogenerated part of the component 
+        print out all components we have - kubectl get all (gives all resources in the default namespace)
+    Check config file of nginx service that k8s added info to 
+        kubectl edit svc (servicename)
+        Opens default editor - showing config file based on service manifest we created but k8s added info to it 
+        escape and quit 
+    Can do the same check to the deployment status 
+    Can you edit command with all components
+    Can also check without going into edit mode
+        kubectl get svc (servicename) -o yaml 
+        Gives output in a yaml format 
+
+

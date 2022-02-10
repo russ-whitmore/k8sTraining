@@ -1,0 +1,95 @@
+## Networking Basics Pre-req
+
+LAN, Switch, Router, WAN, Gateway
+
+Imagine home network where every home device is connected to a network internally
+    This is called a LAN
+    Defined by an IP address which is unique for each device 
+
+IP - Internet Protocol 
+    32 bit value 
+    1 bit = 1 or 0 
+    Every 8 bits are grouped into an octet 
+
+How do devices talk to each other?
+    Switch 
+        Sits within the LAN
+        Facilitates the connection between all devices in the LAN
+
+How to talk to devices outside of LAN?
+    Router 
+        Sits between LAN and outside networks (WAN - wide area network)
+        Connects devices on LAN and WAN 
+        Allowed network devices to access the internet 
+    Example: Phone connects to switch which connects to router which connects to the internet 
+
+
+How to know, whether the other device is inside or outside LAN?
+    IP address of target device 
+    Devices in the LAN belong to the same IP address range
+        Subnet 
+    Example: 192.168.0.0 (1)
+             255.255.255.0 (2)
+        1. Starting point of IP range, first IP in the range 
+        2. Sets the IP range 
+    If we change the subnet mask from 255.255.255.0 to 255.255.0.0
+        192.168.x.x - All IP addresses starting with 192.168.x.x belong to the same LAN 
+        192.168.0.x - All IP addresses starting with 192.168.1.x belong to the same LAN 
+    255.255.0.0 - means that 16 bits are fixed 
+    255.255.255.0 - means that 24 bits are fixed 
+        Value 255 fixates the octet
+        Value 0 means free range 
+    
+CIDR block 
+    Subnet mask dictates how many bits are fixed 
+    CIDR - Classless Inter-domain routing 
+    Shorthand for IP address and subnet mask:
+    Instead of 192.168.0.0 and 255.255.255.0 = 192.168.0.0/24
+    Another example: 192.168.0.0 and 255.255.0.0 = 192.168.0.0/16
+    16 and 24 represent the number of fixed bits 
+
+Any device needs 3 pieces of data for communication:
+    IP address
+    Subnet 
+    Gateway 
+
+NAT
+    IP address range chosen by an administrator 
+    Each device gets a unique IP from that range 
+    How to make sure IP addresses don't overlap? 
+        IP addresses that belong to a LAN, they aren't visible to the internet 
+        It's replaced by IP address of Router - NAT 
+    NAT is when your local IP address is replaced by the router. 
+
+    Benefits of NAT 
+        Security and protection of devices within LAN 
+        Reuse IP addresses 
+        Two huge companies can have the same internal IP Addresses and there's no impact 
+        Limited number of IP addresses available 
+
+Firewall 
+   By default a server is not accessible from outside the LAN because of the Firewall
+   Set of rules that prevent unauthorized access from entering a private network 
+   Using Firewall rules, you can define, which requests are allowed 
+
+   Firewall rules 
+    Which IP in your network is accessible
+    Which IP can access your server 
+    You can allow everyone to talk to it - if you're running an application 
+
+Port 
+    Every device has a set of ports
+    You can allow specific ports - like a door. Can keep certain doors opened and others locked 
+    Like doors to the same building 
+    You can unlock for specific guests or IP addresses
+    Firewall config defines which server you want to unlock and for which requests 
+    Different applications listen on different ports 
+        You can access an application on a specific port 
+        There are standard ports for many applications  
+            i.e. Port 80 - web servers 
+        Other apps like databases have standard ports as well 
+        Every application needs a port 
+        Each port is unique 
+            If you have more than 1 application attempting to listen on the same port, you will get an error 
+                Error will be port already in use 
+    

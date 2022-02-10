@@ -1,0 +1,61 @@
+## Install kubeadm, kubelet and kubectl
+
+How does kubeadm work?
+    Install kubeadm on each node 
+    First command is kubeadm init - executed only once on one of the master nodes 
+    This turns a regular server into a master node 
+    This command orchestrates the entire cluster set up 
+    Generates /etc/kubernetes folder
+    Generates a self-signed CA to set up identities for each component
+    Put generated certificates inside
+    Generates static pod manifest files, into /etc/kubernetes/manifests
+    Makes all necessary configurations (API server, kubelet, etcd, etc. )
+    Kubelet will detect manifest files and start the pods with suffix of hostname
+
+Kubeadm 
+    Does not install or manage kubelet 
+    Need to install ourselves: starts pods and containers
+    Need to install Kubectl ourselves as well 
+    Command line tool to initialize cluster, simplifies process of setting up the cluster 
+
+Kubelet 
+    Does things like starting pods and containers
+    component that runs on all machines in your cluster 
+
+Kubectl
+    Command line tool to talk to the cluster 
+
+All 3 are maintained by kubernetes and have the same release versions
+
+#To install all 3 - follow instructions here: https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/
+
+1. Update the apt package index and install packages needed to use the Kubernetes apt repository:
+
+    sudo apt-get update
+    sudo apt-get install -y apt-transport-https ca-certificates curl
+
+2. Download the Google Cloud public signing key:
+
+    sudo curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
+
+3. Add the Kubernetes apt repository:
+
+    echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+
+4. Update apt package index, install kubelet, kubeadm and kubectl, and pin their version:
+
+    sudo apt-get update
+    sudo apt-get install -y kubelet kubeadm kubectl
+    sudo apt-mark hold kubelet kubeadm kubectl (this stops these versions from auto updating)
+
+##Once these are installed, move to worker nodes to install. 
+
+Worker nodes install
+    Convert above to a script by following the same steps in 2.8 Notes (Install Container Runtime)
+
+If you want to install a particular version: 
+    append this command: sudo apt-get install -y kubelet kubeadm kubectl
+    Add the version number after each app i.e. kubelet=1.21.0-00 kubeadm=1.21.0-00 etc. 
+
+Can check all these services to verify - kubelet will fail but be installed because it's waiting
+    It's waiting for kubeadm to initialize the cluster

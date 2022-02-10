@@ -1,0 +1,43 @@
+##  Assigning to Nodes
+
+nodeSelector gives more flexibility, however if all of the pods don't have the resources, nothing will be assigned
+
+Schedule Pods on specific nodes for different purposes 
+
+nodeAffinity
+    Similar to nodeSelector, but affinity language is more expressive 
+    Match labels more flexible with logical operators 
+        In 
+        Not In - to avoid specific nodes, type of OS for example 
+        Exists - Match nodes that have a specific label defined, value doesn't matter 
+        DoesNotExist - nodes that don't have a specific label 
+        Gt - example, nodes that have CPU/RAM greater than a specific amount
+        Lt
+    Syntax is more complex 
+    Inside pod definition file 
+    inside spec at the top 
+    affinity:
+      nodeAffinity:  - can define multiple rules and expressions that will assign to nodes 
+        can make rules either required or preferred 
+        Required - an absolute Match
+        preferred - try to find a node but there's a fallback rule 
+
+
+Create pod-nodeAffinity.yaml to assign a pod to a linux node with cpu label (should be worker2)
+affinity:
+  nodeAffinity: 
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kuberenetes.io/os 
+          operator: In
+          values:
+          - linux
+    preferredDuringSchedulingIgnoredDuringExecution:
+    - weight: 1
+      preference: 
+        matchExpressions:
+        - key: type 
+          operator: In 
+          values: 
+          - cpu 

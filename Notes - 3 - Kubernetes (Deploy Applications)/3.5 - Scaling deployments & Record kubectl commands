@@ -1,0 +1,41 @@
+#Scaling k8s and record kubectl commands 
+
+Scaling deployments up and down 
+    We decide we want to scale nginx app to 4 replicas instead of 2
+    One way to do it - 
+        Adjust replica count in nginx-deployment.yaml 
+    Other way is by kubectl 
+        kubectl scale --help
+            will give us all options and usage of scale command 
+            Can use scale on deployments or stateful sets 
+        kubectl scale deployment nginx-deployment --replicas=4
+           This will scale replicas to 4. 
+        To verify:
+            kubectl get pod
+        Scale down to 3:
+            kubectl scale deployment nginx-deployment --replicas=3
+            verify - kubectl get pod 
+    The command way will be overwritten the next time the deployment file is ran, unless that file is updated. 
+
+
+--record option 
+    Making changes to components using kubectl command is imperative vs declarative - our team cannot review those changes using the kubectl subcommands
+    Can overcome that by adding a audit trail using the --record option 
+    kubectl scale --help 
+        This will show --record as an option 
+        Can turn it on to record the change 
+        Same goes for kubectl create command as well 
+        This option can be used with almost all kubectl subcommands
+    This will add kubectl.io change cause 
+
+    To show this in action:
+        kubectl scale deployment nginx-deployment --replicas=5 --record
+        kubectl scale deployment nginx-deployment --replicas=3 --record
+
+        To check what happened above 
+            kubectl rollout --help 
+            kubectl rollout history --help
+            Can see history of deployments, daemon set or stateful sets 
+            kubectl rollout history deployment nginx-deployment
+                Will show last command recorded 
+

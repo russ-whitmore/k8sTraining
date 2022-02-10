@@ -1,0 +1,38 @@
+##Configure K8s nodes 
+
+1. Turn off swap 
+    sudo swapoff -a on each server (worker and master)
+2. Open various ports on VMs - https://kubernetes.io/docs/reference/ports-and-protocols/
+    Can only ssh in AWS to start (port 22)
+    Master node: 
+        1. Apps on master and worker nodes must communicate 
+        2. Use security groups under security section of server 
+        3. Select edit inbound rules
+        4. Open 6443 for k8s API server, used by all (custom tcp type in AWS)
+        5. Open 2379-2380, used by etcd server, accessible only from inside the cluster. Give VPC IP address range 
+            Always give minimum permissions
+        6. 10250, 10257, 10259 for kubelet api, kube-scheduler and kube-controller-manager respectively. 
+            Give VPC IP address range only. Only accessible within private network. 
+        7. Name launch wizard group to specified group - in this case, master
+    Worker node:
+        1. Uses different security group, they need to be the same to prevent duplicate work. 
+            To change security group, need to edit node in AWS and assign the same group. 
+        2. Need to edit inbound rules 
+        3. Kubelet API Port 10250 and only inside the VPC address range 
+        4. Nodeport Services - 30000-32767 - all accessible
+        5. Save and assign group to worker nodes to avoid duplicate work 
+
+3. Host names 
+Name our servers a readable name (master, worker1, worker2)
+    1. Connect via ssh command - ssh 0i ~/.ssh/k8s-node.pem to all 3 servers 
+    2. command - sudo vim /etc/hosts 
+    3. Create entries for each node in the file 
+    4. Using the private ip address (not the public facing one) which will be in AWS and in the terminal
+    5. format - ip address master 
+                ip adress worker1
+                ip address worker2
+    6. These entires need to be on all servers so they can talk to each other. 
+    7. Save and quit (:wq)
+    8. Assign hostnames to each server as well
+        Command - sudo hostnamectl set-hostname (name of server, i.e. master, worker1, etc.)
+        

@@ -1,0 +1,15 @@
+##Intro to k8s config file 
+First 2 lines (apiVersion and kind) are dependent on the type of component being configured 
+Made in YAML - very strict about indentations 
+YAML online validators can help
+
+3 Parts of a configuration file 
+    1. Metadata - name
+    2. Specification - put all configurations you want to apply for that component
+    3. Status - desired vs actual 
+        The information of the current status comes from the ETCD 
+
+Store config files with your code or own git repo just for configuration files 
+    
+
+    

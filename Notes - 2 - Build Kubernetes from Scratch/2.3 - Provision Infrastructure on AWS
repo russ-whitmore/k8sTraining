@@ -1,0 +1,15 @@
+## Provisioning infrastructure on AWS
+
+Install and setup k8s cluster on AWS 
+
+1. Login to AWS and create 3 ubuntu servers
+    1 Master node and 2 worker nodes
+    2 cores and 4 gb for Master
+    2 cores and 8 gb for workers
+    Name them nodes
+2. Set up .ssh folder and copy k8s-node.pem cert over to .ssh folder (will need admin access on local)
+    Can create folder if necessary, using ssh-keygen in terminal
+3. Will need to adjust permissions on key path first using command: chmod 400 (.ssh key filepath)
+4. Once file is copied over, will need to ssh into Master node
+    ssh -i (key path) ubuntu@ipaddress - hit enter
+5. You will now have access into the server 

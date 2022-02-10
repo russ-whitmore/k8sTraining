@@ -1,0 +1,24 @@
+##Manage kubernetes resources 
+
+Kubectl
+    Kubernetes CLI tool
+    Can create, delete and update deployment, statefulset etc. 
+    Enables interaction with the cluster
+    Get information from the cluster
+    Limitation when using these commands when trying to configure more complex things. Multiple ports etc. 
+
+
+Config file (kubernetes configuration files)
+    Alternative for more complex configurations 
+    Write the entire configuration in a file and once its done you can apply whats in the file with kubectl apply command. 
+    Update k8s components - edit config and apply again 
+    Delete k8s components with config file 
+    Also called kubernetes manifests 
+
+Imperative vs Declarative
+    Imperative - telling kubernetes what to do 
+        Create, update, delete etc. 
+        Can be useful when testing or making quick changes 
+    Declarative - we declare what we want in the configuration file then kubernetes figures that out
+        Better than Imperative because it ties into infra as code
+        More transparent because we can see changes

@@ -1,0 +1,24 @@
+##Kubectl pro tips 
+
+Shorthand alias 
+    alias k=kubectl 
+    this will create an alias in the current active session - not permanent
+    can now use k instead of kubectl
+    k get pod instead of kubectl get pod 
+
+Creating manifest files efficiently 
+    going to the kubernetes documentation is 1 way
+    a better way is generate via imperative commands - kubectl create service clusterip test-new-cidr --tcp=80:80 --dry-run=client -o yaml > my-svc.yaml
+
+    kubectl create deployment --help 
+        kubectl create deployment my-deployment --image=nginx:1.20 --port=80 --replicas=3 --dry-run -o yaml > my-deployment.yaml 
+        ls to verify 
+
+    create a config file for a pod 
+        kubectl run my-pod --help (kubectl run is the command to deploy a pod)
+        kubectl run my-pod --image=nginx:1.20 --labels="app=nginx,env=prod" --dry-run=client -o yaml > my-pod.yaml 
+
+Delete lines in vim 
+ dd will delete one line when not on insert mode to command mode by hitting escape 
+
+

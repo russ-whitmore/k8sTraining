@@ -1,0 +1,141 @@
+##Authorization with RBAC
+
+Why Authorization?
+
+    Administer k8s cluster 
+    Deploy to k8s cluster 
+    How to manage permissions?
+        Admins need different access than devs
+        Devs need 
+        Least privilege rule - we give every user only the permissions they need, not more
+
+        Devs 
+            Multiple namespaces in the cluster 
+            Each dev team deploys in different namespace
+            How to restrict to only their namespace?
+                RBAC - Role based access control  
+                With role component you can define namespaced permissions using roles 
+                Role is bound to a specific namespace 
+                    Sets what resources in that namespace you can access 
+                    What action you can do with the resource?
+                        Read, write, create, delete 
+                        Maybe they can create but not delete stuff 
+                    No information around who gets access 
+                How to attach role definition to a dev team?
+                    RoleBinding - Link a role to a user or group 
+                    Can create a user and bind a role to that specific user 
+                    Best practice is if multiple users require same perms - create group 
+                    All members of the group get same permission that's defined in the role 
+
+            What about admins?
+                K8s admins manage namespaces, config volumes, doing cluster wide operations 
+                Role doesn't work here - limited to a namespace 
+                Need cluster wide - ClusterRole 
+                    What resources have what perms but cluster wide 
+                    Create a cluster role and an admin group 
+                    Attach the ClusterRole to the admin group using a ClusterRole binding 
+
+            How to create users or groups in k8s?
+                K8s doesn't manage users natively 
+                Admins can choose from different authentication strategies
+                No k8s objects exist for representing normal accounts 
+                Relies on external sources for authentication
+                Examples:
+                    Static token file 
+                    Certificates 
+                    3rd party identity service - LDAP 
+                Admin configures external source 
+                API server handles authentication of all requests 
+                Pass token file via --token-auth-file=/users.csv (if users.csv is the token file) command line option 
+                full command: kube-apiserver --token-auth-file=/users.csv [other options]
+                If you want to define groups, you can add groups in the csv file 
+
+                For Certificates: 
+                    Manually create Certificates for users 
+                    or 
+
+                Configure LDAP for server 
+                    Need to manage ourselves 
+
+            Admins: Access to whole cluster through ClusterRole
+                K8s admins - ClusterRole 
+                Devs - Namespaced access through role 
+
+                Application users (applications and services)
+                    Applications are inside the cluster or outside the cluster 
+                    Monitoring apps - which collects metrics from other apps within the cluster 
+                    Microservices - needing access only within their namespaces 
+                    CI/CD - deploying apps within cluster 
+                    Infrastructure provisioning tools configuring the cluster 
+                    Least privilege security rule 
+                        We also want Apps to have only the permissions they need 
+
+                    K8s component represents an application user 
+                        ServiceAccount  - kubectl create serviceaccount sa1
+                        Link ServiceAccount to role with RoleBinding or ClusterRoleBinding 
+
+                Example configuration 
+                    Role configuration file: 
+
+                    apiVersion: rbac.authorization.k8s.io/v1
+                    kind: Role
+                    metadata:
+                        namespace: default (don't need to add if default, otherwise this allows you to scope role to namespace)
+                        name: pod-reader
+                    rules:
+                    - apiGroups: [""] # "" indicates the core API group (indicates the core API group, can leave empty)
+                      resources: ["pods"] (k8s components like pods, deployments etc.)
+                      verbs: ["get", "watch", "list"] (the actions on a resource - "get" "list" (read-only) or "create", "update" (read-write))
+                      resourceNames: ["my-app"] (define access to only certain pods in that namespace)
+                    - apiGroups: [""] # "" indicates the core API group (indicates the core API group, can leave empty)
+                      resources: ["pods"] (k8s components like pods, deployments etc.)
+                      verbs: ["get", "watch", "list"] (the actions on a resource - "get" "list" (read-only) or "create", "update" (read-write))
+                      resourceNames: ["my-app"] (define access to only certain pods in that namespace)
+                      
+                    RoleBinding configuration file example: https://kubernetes.io/docs/reference/access-authn-authz/rbac/
+
+
+apiVersion: rbac.authorization.k8s.io/v1
+# This role binding allows "jane" to read pods in the "default" namespace.
+# You need to already have a Role named "pod-reader" in that namespace.
+kind: RoleBinding
+metadata:
+  name: read-pods
+  namespace: default
+subjects:
+# You can specify more than one "subject" (bind subject)
+- kind: User
+  name: jane # "name" is case sensitive
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  # "roleRef" specifies the binding to a Role / ClusterRole (To role)
+  kind: Role #this must be Role or ClusterRole
+  name: pod-reader # this must match the name of the Role or ClusterRole you wish to bind to
+  apiGroup: rbac.authorization.k8s.io
+
+                    Cluster role you can define what privileges they have on worker nodes 
+                    Define access for cluster-wide resources 
+                    Define access for namespaced resources 
+        
+        Create role, ClusterRole etc. just like any other k8s component
+            kubectl apply -f developer-role.yaml 
+            --dry-run=client -o yaml > my-dev-role.yaml 
+            View them with kubectl get or describe commands 
+
+        Checking API access 
+           kubectl auth can-i create deployments --namespace dev (for example)
+           Admins can also check permissions of other users 
+
+Wrap up:
+
+    Layers of security:
+        Request to API server 
+            1. API server authenticates the user by checking if the user is authenticated?
+                Is this app allowed to talk to the cluster at all?
+            2. Checks authorization by checking RBAC 
+                Role, ClusterRole, Binding are checked 
+
+
+
+
+            

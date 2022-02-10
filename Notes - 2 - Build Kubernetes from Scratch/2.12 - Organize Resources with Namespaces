@@ -1,0 +1,61 @@
+##Namespaces 
+
+What is a namespace?
+    Organize resources in namespaces 
+    Virtual cluster inside of a kubernetes cluster 
+    4 Namespaces by default 
+    Kubectl get namespaces will show all namespaces 
+    Kubectl create namespace (namespace name) will create namespace 
+    Create namespace with a configuration file 
+
+Why use a namespace?
+    Imagine you create all your resources in one namespace 
+        You have deployments, replicasets, services, configs 
+        Everything would be grouped together making it difficult to view and manage 
+    Better way to do it - Group resources into namespaces 
+        Database namespace - where you deploy db and all DB related resources 
+        Monitoring namespace - only monitoring resources  
+        Elasticstack namespace - all elastic related 
+        NGinx-Ingress - all nginx related 
+        etc.
+    Use cases to use namespaces 
+        Multiple teams 
+            If multiple teams have a deployment with the same name but different configuration
+                2nd team would override first teams deployment, if using automation i.e. Jenkins, they wouldn't know it occurred 
+            Namespaces prevent that 
+        Resource Sharing: Staging and development 
+            If hosting staging and development in the same cluster for Example
+                Say you're using Elastic stack, DD etc you can re-use those components in both environments 
+                Don't have to deploy common resource twice
+        Blue/Green deployments 
+        Access and Resource limits on namespaces
+            Two teams work in the same cluster but each has own namespace 
+            Can give teams access to only their namespace 
+                They can do whatever they need in their own namespace but no one elses 
+            Can also limit resources per namespace (RAM, CPU, Storage)
+                Called Resource Quotas 
+                
+Characteristics of a Namespace 
+    You can't access most resources from another Namespace 
+        Example - You have 2 projects - Project A and Project Be
+                    Project A has a configmap that references the database service
+                    Project B does not and tries to use Project A's configmap 
+                    That won't work
+                    Project B will need to create their own configmap to reference the DB service
+        Each Namespace must define it's own configmap, even if it's the same reference 
+            Same applies to any secrets
+            You will have to create that secret in each namespace 
+
+    A resource you can share - Service 
+        Project B references a service
+        Configmap definition will also have a namespace at the end of the URL 
+        You can access namespaces by using that specific URL 
+
+    Certain Components can't be created within a namespace  
+        They live globally 
+        You can't isolate them 
+        Examples: 
+            Node
+            Persistent Volume 
+
+        

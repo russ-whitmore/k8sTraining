@@ -1,0 +1,117 @@
+## Ingress 
+
+Self-Managed k8s cluster: 
+    Have to create loadbalancer by yourself 
+
+Using loadbalancers this way is costly and not a great strategy. Disadvantages are:
+
+    Loadbalancers all become entrypoints for every application domain name 
+    Configuring a domain that matches 
+    Each loadbalancer exposes a new nodeport
+    Configure everything outside the cluster 
+
+How can we have this as a part of the k8s cluster?
+    Configure secure connection
+    Loadbalancing to different services 
+    The solution for all of this is ingress 
+
+Ingress
+    a kubernetes component
+    allows you to configure routing 
+    configure https
+    Deployed and available inside the cluster 
+    Need to expost it either as a nodeport or loadbalancer
+    1 nodeport or loadbalancer is the single entry point 
+
+How Ingress works?
+    Example yaml file: Ingress:
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: minimal-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+  - host: myapp.com  (what user will enter in the browser) - needs to be valid domain address and also map domain name to Node's IP address which is the entrypoints ip address
+    http: ( = step 2, incoming request gets forwarded to internal service)
+      paths:  (URL path)
+      - path: /testpath
+        pathType: Prefix
+        backend:
+          serviceName: my-app-internal-service (Redirects URL to this service)
+          servicePort: 8080
+
+
+Kind - ingress instead of service 
+Rules are under spec 
+    Defines main address to that host must be forwarded to an internal service - under service: > name: 
+
+Ingress and Internal Service configuration 
+    Ingress:
+        serviceName should correspond to the name in the internal service config under metadata
+        servicePort in ingress needs to match internal service - port:  
+    Internal service:
+        No nodeport in internal service
+        instead of loadbalancer, default type: clusterIP 
+
+How to configure ingress?
+    Pod, service and ingress 
+    Need an implementation of ingress 
+        This is known as an ingress controller - another pod or set of pods that run on the node 
+        Evaluate and process ingress rules 
+
+What is ingress controller?
+    Evaluates all the rules in the cluster to manage Redirects
+    Entry point to cluster
+    Many third party implementations 
+    K8s Nginx ingress controller is one example 
+
+    Need to consider environment where the cluster is running 
+    Clouds cluster config would look like this:
+        Cloud load balancer provided by vendor 
+        External request coming from browser would hit load balancer and Redirects request to ingress controller 
+        Don't have to implement loadbalancer yourself with cloud providers 
+    Bare metal:
+        Need to configure some kind of entrypoint yourself
+        Either inside of cluster or outside as a separate server 
+            One type is a proxy server - software or hardware solution 
+                Separate server, public IP address, open ports for requests to be accepted 
+                Acts as entrypoint to the cluster 
+                No server in k8s cluster is accessible from outside 
+        Ingress controller checks ingress rules 
+        Internal forwarding then happens 
+
+
+More use cases - Multiple paths for same post 
+
+    Google - 1 domain but many services 
+    In rules under the ingress yaml;
+        Can add Multiple paths with different service names corresponding 
+
+    Multiple sub-domains or domains 
+        Instead of: 
+            myapp.com/analytics > analytics.myapp.com 
+            instead of 1 host and multiple paths > multiple hosts and 1 path 
+            path: http://analytics.myapp.com > analytics service > analytics pod 
+    
+Configure TLS certificate - https//
+    define attribute: tls under specs
+    then under hosts (which is under TLS) you'll have the secretName attribute: reference to a secret that holds the TLS certificate 
+    Need to create a secret (kind:) config yaml
+        metadata name: myapp-secret-tls
+        data: 
+            tls.cert: base64 encoded cert (values are file contents, not file paths/locations)
+            tls.key: base64 encoded key 
+        type: kubernetes.io/tls 
+        Secret component must be in the same namespace as the ingress component
+        Need to ensure these lines are present and set in ingress config file for tls cert:
+           spec: 
+            tls:
+              - hosts:
+                - myapp.com
+                secretName: myapp-secret-tls               
+
+
+    

@@ -1,0 +1,64 @@
+##Labeling components
+
+Use cases of using labels 
+    Connecting services to pods 
+    
+What are other use cases?
+    Should we label other components - any components. Deployments, services, pods, etc. 
+    Does kubernetes add their own labels to other components - yes
+
+It's a best practice to lable components
+
+To label our service - example for service config yaml from 3.3:
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service 
+  labels: - (newly added labels section) 
+    app: nginx - (newly added)
+    svc: test-nginx - (newly added)
+spec:
+  selector:
+    app: nginx (- Defines the label for the pods it wants to find - needs to match app under labels in metadata in the deployment yaml file)
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 9376
+
+After making adjustments to the file - save and apply changes
+    These changes won't automatically take effect, so to apply changes:
+    Run - kubectl apply -f nginx-service.yaml to apply config file 
+    Service will now be configured 
+    To find whether component exists or not is by using the name of the component
+    You can't have 2 services with the same name in the same namespace. 
+        Same goes for deployments or any other component
+
+To check labels of components:
+    kubectl describe svc nginx-service (example for service)
+        It will show a number of things, including its labels 
+    kubectl describe deployment nginx-deployment (example for deployment)
+Can also do:
+    Kubectl get deployment --show-labels 
+    kubectl get service --show-labels 
+        This will add the label column to the output 
+Another usage of labels 
+    You can select the components using label instead of its name 
+    kubectl get svc -l app=nginx 
+        gives you all services with that label
+        Is most useful if you have a number of replicas that have the same app
+        Pod names will be different but if you wanted to see any issues with the app specifically, this will help with debugging
+
+Another important use:
+If you want to check logs of the app with a certain request - don't know which pod handled that request 
+Can show logs of all replicas using their label 
+    Command: kubectl get logs -l app=nginx
+        This will give us logs of all pods in one output 
+    This is most useful in a crowded cluster 
+
+Labels automatically assigned by kubernetes 
+    K8s master and worker processes use labels to target other components in the cluster
+    Command - kubectl get pod -n kube-system --show-labels 
+        shows all pods under kube-system namespace and includes all labels 
+            There are a number of pods kubernetes auto-assigned labels 
+            The nodes have the same thing 

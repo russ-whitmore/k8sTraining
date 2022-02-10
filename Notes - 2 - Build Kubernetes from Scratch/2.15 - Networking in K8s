@@ -1,0 +1,12 @@
+## Networking in kubernetes 
+
+Command: kubectl get node 
+    master node status is showing as Notready 
+
+Command: kubectl get pod -n kube-system
+    two pods in the kube-system namespace are showing as pending (Coredns pods)
+
+Reason for both issues: 
+    Pod network needs to be installed 
+
+What is a pod network?

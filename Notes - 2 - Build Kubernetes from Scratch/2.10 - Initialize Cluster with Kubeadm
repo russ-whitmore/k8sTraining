@@ -1,0 +1,36 @@
+## How to initialize a cluster with KubeADM
+
+Initialize cluster - how to start doing kubernetes 
+    (need root permission)sudo kubeadm init - this command initializes kubernetes
+    What is it doing?
+        Bootstraps the whole cluster 
+        Creates a master node 
+        Stages:
+            1. Preflight stage - all checks made to ensure servers are in proper state for installation
+                Downloading or pooling all images needed to start up cluster
+            2. Certs - generates all necessary certificates 
+                creates /etc/kubernetes/pki - where all generated certs live
+                Any certificate you need to find will be in that folder. API, ETCD have separate folders inside pki folder 
+            3. Kubeconfig generation stage 
+                Writes kubeconfig files in /etc/kubernetes 
+                For kubelet, controller-manager and scheduler to use to connect to API server
+                As well as kubeconfig file for administration
+            4. Kubelet-start phase 
+                Writes kubelet settings and (re)start the kubelet
+                kubeadm generates a configuration file for kubelet and stores in /var/lib/kubelet/config.yam
+                check - service kubelet status - it should now be running
+            5. Control-plane
+                generates static pod manifests for the API server, controller-manager and scheduler
+                Stores manifests in /etc/kubernetes/manifests directory    
+                Kubelet watches this directory for pod to create on startup
+                check - cat /etc/kubernetes/manifests to view configuration of various tools
+                    Example, ETCD, API server, etc. 
+                    This is where you override or change parameters 
+                    Kubelet will see if a change has been made and then will restart the pod with those changes
+
+            6. Addons - installs a DNS server (CoreDNS) and the kube-proxy addon components via the API server
+                Kubeproxy is a network proxy, which runs on each node. 
+                Kubelet certs are in a different location - /var/lib/kubelet/pki 
+                Kubelet runs as a process, not as a pod so it's housed in the /var/lib/kubelet directory for configuration settings
+            
+

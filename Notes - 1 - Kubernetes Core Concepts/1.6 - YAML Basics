@@ -1,0 +1,49 @@
+##YAML Basics Tutorial 
+
+What is YAML 
+    Data serialization language (JSON, YAML, XML)
+        Applications written with different technologies can transfer data to each other
+    Human readable and intuitive 
+
+YAML compared to others 
+    YAML is a superset of JSON: any valid JSON file is a YAML file (without curly brackets)
+    Line separation and indentation is how you view different sections 
+    Cleanest and most readable format of all 3
+
+Use cases 
+    Ansible, kubernetes, docker compose, prometheus etc. 
+
+Syntax of YAML
+    Key-value pairs (example below) 
+        # comment here 
+        app: user-authentication
+        port: 9000
+        version: 1.7
+    Object 
+        indenting key value pairs and enclosing it in an object. (example below with microservice as the name of the object)
+        microservice: 
+            app: user-authentication
+            port: 9000
+            version: 1.7
+    Lists - multiple objects (example below)
+        Can use lists inside of lists
+        List items need to be aligned
+        Always need to start with dashes as below  
+         microservices: 
+          - app: user-authentication
+            port: 9000
+            version: 1.7
+          - app: shopping cart 
+            port: 9002
+            version: 1.9
+    Boolean
+        microservices: 
+          - app: user-authentication
+            port: 9000
+            version: 1.7
+            deployed: off (boolean values, yes or no, on or off, etc.)
+    Environmental Variables 
+        Can access them using a dollar sign and the name like a normal variable
+    Multiple Components
+        Can be separated using 3 dashes --- 
+        Is used if you need multiple configurations and need to separate them out. 

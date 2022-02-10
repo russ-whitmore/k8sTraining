@@ -1,0 +1,68 @@
+## Connect to cluster with User 
+
+kubectl options 
+kubectl get pod - uses the admin certificate because that's what's configured 
+need to execute kubectl command using dev-tom user 
+
+kubectl options - show all options that apply to kubectl command 
+    --client-certificate
+    --client-key
+    --certificate-authority
+    --server (The address and port of the k8s API server)
+
+These will override the values 
+    kubectl cluster-info 
+        address of API server 
+    kubectl --server (address) \ (new line)
+    --certificate-authority /etc/kubernetes/pki/ca.crt \
+    --client-certificate dev-tom.crt \
+    --client-key dev-tom.key \
+    (telling kubectl to go to specific server and use certs and keys specified)
+    run kubectl command get pod 
+    will see errors 
+    client-cert-data and client-key-data will override - they have precedence over the above options
+    cat ~/.kube/config
+    see in default file, client certificate and key files are defined in the file. This causes it to take precedence 
+    To test our command 
+    mv ~/.kube/config . (move to current folder from kube folder)
+    ls ~/.kube/ - will now be gone from that folder  
+    Rerun  kubectl --server (address) \ (new line)
+    --certificate-authority /etc/kubernetes/pki/ca.crt \
+    --client-certificate dev-tom.crt \
+    --client-key dev-tom.key get pod
+    Error will show it worked but that Tom doesn't have access to list resource "pods" in the API group 
+    The authentication worked, now we need to set authorization (permissions)
+
+Use kubeconfig file 
+    Create our own kubeconfig file for dev-tom user 
+    cp config dev-tom.conf 
+    vim dev-tom.conf 
+    change all values from kubernetes-admin to dev-tom user 
+    name of user has to change to dev-tom 
+    change user in contexts: section to dev-tom@kubenetes 
+    Replace client-certicate-data for Tom 
+        1. Reference files 
+        2. or include base64-encoded content 
+        3. change to client-certificate and client-key attributes 
+        4. Use the reference - dev-tom.crt for client-certificate and dev-tom.key for client-key while deleting the original values 
+        kubectl --kubeconfig dev-tom.conf get pod 
+        will still not have permissions 
+        take config, certificate and key file, give it Tom and have  him put it in his home directory 
+        he will be able to run kubectl commands 
+
+Optimized way to use it 
+    Put the cert and key files in the config instead of pointing to those files 
+    Just need one file to move instead of 3 files 
+    client-certificate to client-certificate-data 
+    client-key to client-key-data 
+    vim ~/.kube/config 
+    base64 dev-tom.crt | tr -d  "\n"
+    copy and put the value in client-certificate-data 
+    base64 dev-tom.key | tr -d  "\n"
+    copy and put the value in client-key-data 
+
+
+
+
+
+

@@ -1,0 +1,36 @@
+## Taints and Tolerations 
+
+Configuring nodes with the affinity logic 
+Which pods should be scheduled on nodes 
+Nodes worker1 and 2 should repel specific pods 
+    This is called a taint 
+    to see the taint - kubectl describe node master 
+kubectl describe node | grep Taint 
+kubeadm sets the taints on master nodes 
+when bootstrapping kubeadm sets the taint 
+
+How did the pods land on the control plane?
+    Toleration
+        applied to pods
+        Allow the pods to schedule onto nodes with matching taints 
+    Taint - applied to nodes 
+    Taints and tolerations work together 
+
+    kubectl describe pod -n kube-system etcd-master 
+    kubectl get pod 
+
+Configure Toleration for Master Taint 
+    schedule this logging pod on the master node 
+    vim pod-with-tolerations.yaml  - if this effect exists on a node we want to tolerate it on this pod 
+    paste in pod config 
+    add inside spec 
+    tolerations:
+    - effect: NoExecute 
+      operator: Exists  
+      Does not guarantee that pod is scheduled on the control plane 
+      Tolerates the Master Taint 
+      Need to guarantee it's selected 
+      add nodeName: master (that'll guarantee it'll be put on the master node)
+      kubectl apply -f pod-with-tolerations.yaml 
+      kubeclt get pod pod-with-tolerations -o wide 
+      
